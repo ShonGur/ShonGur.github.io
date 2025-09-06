@@ -20,7 +20,10 @@
     /* First screen BLACK */
     #bg .hero{background:linear-gradient(180deg,#000 0%,#000 100%);opacity:var(--layer-hero)}
     /* Profiles screen DEEP BLUE */
-    #bg .blue{background:radial-gradient(900px 600px at 15% -10%, rgba(100,181,246,.06), transparent 40%),linear-gradient(180deg,#061019 0%,#01060b 100%);opacity:var(--layer-blue)}
+    #bg .blue{background:
+        radial-gradient(900px 600px at 15% -10%, rgba(100,181,246,.03), transparent 40%),
+        linear-gradient(180deg,#031225 0%, #020812 100%);
+      opacity:var(--layer-blue)}
     /* Personal screen RED stays the same */
     #bg .red{background:radial-gradient(900px 600px at 85% 110%, rgba(239,83,80,.12), transparent 40%),linear-gradient(180deg, hsl(330 70% 8%) 0%, hsl(350 70% 3%) 100%);opacity:var(--layer-red)}
 
@@ -228,7 +231,12 @@
       const dots = document.getElementById('dots');
       sections.forEach((sec,i)=>{const b=document.createElement('button');b.setAttribute('aria-label','Go to section '+(i+1));b.addEventListener('click',()=>sec.scrollIntoView({behavior:'smooth',block:'start'}));dots.appendChild(b)});
       const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)); const ss=(e0,e1,x)=>{const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t)};
-      const update=()=>{const y=scrollY;const s2Top=s2.getBoundingClientRect().top+y;const s3Top=s3.getBoundingClientRect().top+y;const maxY=document.body.scrollHeight-innerHeight;const hero=1-ss(0.05*s2Top,0.4*s2Top,y);const blueRise=ss(0.15*s2Top,0.9*s2Top,y);const blueFall=1-ss(0.05*s3Top,0.75*s3Top,y);const blue=clamp(blueRise*blueFall,0,1);const red=ss(0.25*s3Top,0.9*maxY,y);root.style.setProperty('--layer-hero',hero.toFixed(3));root.style.setProperty('--layer-blue',blue.toFixed(3));root.style.setProperty('--layer-red',red.toFixed(3));let idx=sections.length-1;for(let i=0;i<sections.length;i++){const r=sections[i].getBoundingClientRect();if(r.top>=0&&r.top<innerHeight*0.6){idx=i;break}}dots.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-current',j===idx))}; let ticking=!1;addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{update();ticking=!1});ticking=!0}},{passive:!0});addEventListener('resize',update);update()})();
+      const update=()=>{const y=scrollY;const s2Top=s2.getBoundingClientRect().top+y;const s3Top=s3.getBoundingClientRect().top+y;const maxY=document.body.scrollHeight-innerHeight;const hero = 1 - ss(0.05*s2Top, 0.35*s2Top, y);
+        // Make blue fully present throughout section 2
+        const blueEnter = ss(s2Top - innerHeight*0.30, s2Top + innerHeight*0.10, y);
+        const blueExit  = 1 - ss(s3Top - innerHeight*0.80, s3Top - innerHeight*0.10, y);
+        const blue = clamp(blueEnter * blueExit, 0, 1);
+        const red  = ss(0.25*s3Top, 0.90*maxY, y);root.style.setProperty('--layer-hero',hero.toFixed(3));root.style.setProperty('--layer-blue',blue.toFixed(3));root.style.setProperty('--layer-red',red.toFixed(3));let idx=sections.length-1;for(let i=0;i<sections.length;i++){const r=sections[i].getBoundingClientRect();if(r.top>=0&&r.top<innerHeight*0.6){idx=i;break}}dots.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-current',j===idx))}; let ticking=!1;addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{update();ticking=!1});ticking=!0}},{passive:!0});addEventListener('resize',update);update()})();
 
     // GitHub + pinned + starred
     (async()=>{try{const u=CONFIG.githubUser;const pr=await fetch(`https://api.github.com/users/${u}`);if(pr.ok){const d=await pr.json(),$=id=>document.getElementById(id);if(d.avatar_url)$('gh-avatar').src=d.avatar_url;$('gh-name').textContent=d.name||'GitHub';$('gh-login').textContent='@'+(d.login||u);$('gh-stats').textContent=`${d.public_repos??'-'} repos · ${d.followers??'-'} followers`}let pinned=[];try{const r=await fetch(`https://gh-pinned-repos.egoist.dev/?username=${u}`);if(r.ok)pinned=await r.json()}catch(e){}if(!Array.isArray(pinned)||!pinned.length){const rr=await fetch(`https://api.github.com/users/${u}/repos?per_page=100&sort=updated`);if(rr.ok){const all=await rr.json();all.sort((a,b)=>(b.stargazers_count||0)-(a.stargazers_count||0));pinned=all.slice(0,6).map(x=>({repo:x.name,description:x.description,stars:x.stargazers_count,language:x.language,link:x.html_url}))}}document.getElementById('pinned').innerHTML=(pinned||[]).map(p=>`<article class="repo"><h4><a href="${p.link||`https://github.com/${u}/${p.repo}`}" target="_blank" rel="noreferrer">${p.repo}</a></h4><p style="opacity:.9">${p.description||''}</p><div class="meta"><span>★ ${p.stars??''}</span><span>${p.language||''}</span></div></article>`).join('')||'No repos to show.';const sr=await fetch(`https://api.github.com/users/${u}/starred?per_page=6`);if(sr.ok){const stars=await sr.json();document.getElementById('starred').innerHTML=stars.slice(0,6).map(x=>`<article class="repo"><h4><a href="${x.html_url}" target="_blank" rel="noreferrer">${x.full_name}</a></h4><p style="opacity:.9">${x.description||''}</p><div class="meta"><span>★ ${x.stargazers_count||0}</span><span>${x.language||''}</span></div></article>`).join('')}}catch(e){}})();
