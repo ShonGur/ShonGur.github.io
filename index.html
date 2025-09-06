@@ -239,19 +239,20 @@
         const y = scrollY;
         const s2Top = s2.getBoundingClientRect().top + y;
         const s3Top = s3.getBoundingClientRect().top + y;
-        const maxY  = document.body.scrollHeight - innerHeight;
         const sectionH = innerHeight;
 
-        // Constant-sum crossfades to guarantee smoothness and no flash
-        // BLACK -> BLUE
-        const t1 = ss(s2Top - sectionH*0.55, s2Top + sectionH*0.25, y); // 0..1
-        const hero = 1 - t1;        // fades out
-        const bluePre = t1;         // fades in
+        // Earlier, stronger crossfades with constant-sum behavior
+        // 1) BLACK -> BLUE: start well before section 2, finish shortly before it
+        const t1 = ss(s2Top - sectionH * 0.95, s2Top - sectionH * 0.15, y); // 0..1
+        const t1s = Math.pow(t1, 0.8);   // accelerate fade-in
+        const hero = 1 - t1s;
+        const bluePre = t1s;
 
-        // BLUE -> RED
-        const t2 = ss(s3Top - sectionH*0.55, s3Top + sectionH*0.35, y); // 0..1
-        const red  = t2;            // fades in
-        const blue = clamp(bluePre * (1 - t2), 0, 1); // holds at 1 in-between
+        // 2) BLUE -> RED: start before section 3, finish near its top
+        const t2 = ss(s3Top - sectionH * 0.85, s3Top - sectionH * 0.05, y);
+        const t2s = Math.pow(t2, 0.7);   // quicker/clearer handoff
+        const red  = t2s;
+        const blue = clamp(bluePre * (1 - t2s), 0, 1); // blue holds fully between the two crosses
 
         // Apply
         root.style.setProperty('--layer-hero', hero.toFixed(3));
