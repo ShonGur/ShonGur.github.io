@@ -30,9 +30,10 @@
       opacity:var(--layer-hero);
     }
     #bg .blue{
+      /* deeper, darker blue */
       background:
-        radial-gradient(900px 600px at 15% -10%, rgba(100,181,246,.09), transparent 40%),
-        linear-gradient(180deg, hsl(220 70% 7%) 0%, hsl(234 70% 3%) 100%);
+        radial-gradient(900px 600px at 15% -10%, rgba(100,181,246,.06), transparent 40%),
+        linear-gradient(180deg, #07111c 0%, #02060d 100%);
       opacity:var(--layer-blue);
     }
     #bg .red{
@@ -53,7 +54,13 @@
     }
 
     main{position:relative; z-index:2; scroll-snap-type:y mandatory}
-    section{min-height:100svh; display:grid; place-items:center; padding:clamp(3rem,6vw,6rem) 1.25rem; scroll-snap-align:start}
+    section{min-height:100svh; display:grid; place-items:center; padding:clamp(3rem,6vw,6rem) 1.25rem; scroll-snap-align:start; position:relative}
+
+    /* top-right hero actions */
+    .hero-actions{position:absolute; top:18px; right:18px; display:flex; gap:.5rem; z-index:5}
+    .hero-actions a{display:inline-block;padding:.55rem .9rem;border-radius:10px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.18);color:var(--text);background:rgba(5,8,13,.45);backdrop-filter:saturate(120%) blur(4px)}
+    .hero-actions a.primary{background:var(--accent-blue);color:#06121c;border-color:rgba(0,0,0,.35)}
+
     .card{
       width:min(1100px,94vw); background:rgba(5,8,13,.55);
       border:1px solid rgba(100,181,246,.25); border-radius:20px;
@@ -71,6 +78,7 @@
     .icon-link{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text);margin-bottom:.6rem}
     .brand-icon{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.18);padding:6px;background:rgba(255,255,255,.05);box-shadow:0 0 10px rgba(100,181,246,.35);display:grid;place-items:center}
     .brand-icon svg{width:100%;height:100%;fill:currentColor;color:#eaf2ff}
+    .brand-icon img.icon-svg{width:100%;height:100%;filter:invert(1) brightness(2)}
     .mini{display:flex;align-items:center;gap:.9rem}
     .avatar{width:64px;height:64px;border-radius:12px;border:1px solid rgba(255,255,255,.2);object-fit:cover}
     .stats{opacity:.9;font-size:.95rem}
@@ -95,17 +103,16 @@
   </div>
 
   <main id="app">
-    <!-- HERO (now includes Contact) -->
+    <!-- HERO (now with top-right Contact) -->
     <section id="s1">
+      <div class="hero-actions">
+        <a class="primary" target="_blank" rel="noreferrer" href="https://mail.google.com/mail/?view=cm&fs=1&to=shoncpp@gmail.com&su=Inquiry">Contact</a>
+        <a href="mailto:shoncpp@gmail.com?subject=Inquiry">Mail app</a>
+      </div>
       <div class="card" style="text-align:center">
         <span class="badge">security researcher</span>
         <h1>Shon Gur</h1>
         <p>Reverse engineering • C++/Python tooling • CI/CD • systems.</p>
-        <h3 style="margin-top:1rem">Contact</h3>
-        <p>
-          <a style="display:inline-block;padding:.7rem 1rem;border-radius:12px;text-decoration:none;color:#06121c;background:var(--accent-blue);font-weight:700;border:1px solid rgba(0,0,0,.35)" target="_blank" rel="noreferrer" href="https://mail.google.com/mail/?view=cm&fs=1&to=shoncpp@gmail.com&su=Inquiry">Email via Gmail (Subject: Inquiry)</a>
-          <a style="display:inline-block;padding:.7rem 1rem;border-radius:12px;text-decoration:none;color:var(--text);border:1px solid rgba(255,255,255,.18);margin-left:.5rem" href="mailto:shoncpp@gmail.com?subject=Inquiry">Use default mail app</a>
-        </p>
       </div>
     </section>
 
@@ -165,8 +172,8 @@
           <div>
             <a class="icon-link" href="https://steamcommunity.com/profiles/76561198937367718/" target="_blank" rel="noreferrer">
               <span class="brand-icon" aria-hidden="true">
-                <!-- Steam icon -->
-                <svg role="img" viewBox="0 0 24 24"><title>Steam</title><path d="M12.001 0C5.375 0 0 5.373 0 12c0 6.262 4.873 11.39 11.025 11.963l2.688-6.266a3.852 3.852 0 0 0 2.081.604 3.88 3.88 0 0 0 3.877-3.877 3.88 3.88 0 0 0-3.877-3.878 3.88 3.88 0 0 0-3.877 3.878l-3.826 1.667a2.973 2.973 0 0 1-2.71-1.31l1.61.682A3.346 3.346 0 0 0 9.64 16.7l2.224-.968a5.64 5.64 0 0 1 5.93-5.37 5.64 5.64 0 0 1 5.37 5.93 5.64 5.64 0 0 1-5.93 5.37 5.61 5.61 0 0 1-2.84-.86l-1.2 2.799C20.91 22.52 24 17.72 24 12 24 5.373 18.627 0 12.001 0zM15.79 12.67a2.69 2.69 0 0 1 2.688 2.688 2.69 2.69 0 0 1-2.689 2.687 2.69 2.69 0 0 1-2.687-2.688 2.69 2.69 0 0 1 2.688-2.687zm0 1.432a1.257 1.257 0 1 0 0 2.515 1.257 1.257 0 0 0 0-2.515z"/></svg>
+                <!-- Steam icon from Simple Icons via CDN for correctness -->
+                <img class="icon-svg" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/steam.svg" alt=""/>
               </span>
               <strong>Steam</strong>
             </a>
@@ -199,6 +206,10 @@
               </span>
               <strong>Spotify</strong>
             </a>
+            <div class="mini" style="margin:.25rem 0 .5rem">
+              <!-- Lightweight preview via Follow widget (no auth) -->
+              <iframe style="border-radius:12px;max-width:320px;width:100%" src="https://open.spotify.com/follow/1/?uri=spotify:user:o4diur3po28i75it7whkdj6rt&size=detail&theme=dark" width="300" height="56" frameborder="0" scrolling="no" title="Follow on Spotify"></iframe>
+            </div>
             <p class="stats">Opens in Spotify app if available, otherwise your default browser.</p>
           </div>
 
@@ -234,7 +245,7 @@
       });
 
       const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
-      const smoothstep=(edge0,edge1,x)=>{const t=clamp((x-edge0)/(edge1-edge0),0,1);return t*t*(3-2*t);};
+      const smoothstep=(e0,e1,x)=>{const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t)};
 
       const update = () => {
         const y = scrollY;
@@ -242,20 +253,16 @@
         const s3Top = s3.getBoundingClientRect().top + y;
         const maxY  = document.body.scrollHeight - innerHeight;
 
-        // Fade hero out between ~10%-70% of the first section
         const hero = 1 - smoothstep(0.1*s2Top, 0.8*s2Top, y);
-        // Blue rises around section 2, then falls before section 3
         const blueRise = smoothstep(0.0*s2Top, 1.0*s2Top, y);
         const blueFall = 1 - smoothstep(0.1*s3Top, 0.8*s3Top, y);
         const blue = clamp(blueRise*blueFall,0,1);
-        // Red rises toward section 3 and into the rest of the page
         const red  = smoothstep(0.3*s3Top, 0.9*maxY, y);
 
         root.style.setProperty('--layer-hero', hero.toFixed(3));
         root.style.setProperty('--layer-blue', blue.toFixed(3));
         root.style.setProperty('--layer-red',  red.toFixed(3));
 
-        // nav dots highlight
         let idx = sections.length - 1;
         for (let i=0;i<sections.length;i++){
           const r = sections[i].getBoundingClientRect();
@@ -285,12 +292,8 @@
           $('gh-login').textContent = '@' + (d.login || u);
           $('gh-stats').textContent = `${d.public_repos ?? '-'} repos · ${d.followers ?? '-'} followers`;
         }
-        // pinned (public helper → fallback to top-starred)
         let pinned = [];
-        try {
-          const pr = await fetch(`https://gh-pinned-repos.egoist.dev/?username=${u}`);
-          if (pr.ok) pinned = await pr.json();
-        } catch(e){}
+        try { const pr = await fetch(`https://gh-pinned-repos.egoist.dev/?username=${u}`); if (pr.ok) pinned = await pr.json(); } catch(e){}
         if (!Array.isArray(pinned) || !pinned.length) {
           const rr = await fetch(`https://api.github.com/users/${u}/repos?per_page=100&sort=updated`);
           if (rr.ok) {
@@ -355,10 +358,7 @@
       link.addEventListener('click', (e)=>{
         e.preventDefault();
         const timeout = setTimeout(()=>{ window.open(webUrl, '_blank', 'noopener'); }, 1200);
-        // Try app scheme. Some browsers will prompt; others will no-op.
         window.location.href = appUrl;
-        // If the app opens, the page likely gets backgrounded and the timeout may not run.
-        // If it doesn't, timeout triggers and opens web URL in default browser.
       });
     })();
   </script>
