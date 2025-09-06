@@ -17,10 +17,8 @@
       --accent-red: #ef5350;  /* secondary */
       --text: #eaf2ff;
     }
-
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
-
     body {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       color: var(--text);
@@ -34,10 +32,10 @@
       transition: background 0.18s linear;
       overflow-x: hidden;
     }
-
     /* subtle scanline + grain overlay */
     body::before {
-      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+      content: "";
+      position: fixed; inset: 0; pointer-events: none; z-index: 1;
       background:
         repeating-linear-gradient( to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.22) 2px 3px ),
         radial-gradient(circle at 20% 10%, rgba(255,255,255,.03) 0 2px, transparent 3px),
@@ -69,14 +67,14 @@
     h2 { font-size: clamp(1.4rem, 4.5vw, 2.2rem); margin: 0 0 .75rem; }
     h3 { font-size: clamp(1.1rem, 3.5vw, 1.4rem); margin: .25rem 0 .25rem; }
     p { margin: 0 0 1rem; line-height: 1.65; opacity: .96; }
-    code { color: var(--accent-blue); }
 
-    .row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-    @media (min-width: 820px) { .row { grid-template-columns: 1fr 1fr; } }
+    .row { display:grid; grid-template-columns:1fr; gap: 1rem; }
+    @media (min-width: 1000px) { .row.two-col { grid-template-columns: 1fr 1fr; } }
 
-    .btn { display:inline-block; margin:.4rem .35rem 0 0; padding:.7rem 1rem; border-radius:12px; text-decoration:none; color:#06121c; background:var(--accent-blue); font-weight:700; border:1px solid rgba(0,0,0,.35); }
-    .btn.red { background: var(--accent-red); color: #1b0202; }
-    .btn.ghost { background: transparent; color: var(--text); border:1px solid rgba(255,255,255,.18); }
+    .icon-link { display:inline-flex; align-items:center; gap:.6rem; text-decoration:none; color: var(--text); margin-bottom:.6rem; }
+    .brand-icon { width: 44px; height: 44px; border-radius: 12px; border:1px solid rgba(255,255,255,.18); padding: 6px; background: rgba(255,255,255,.05); box-shadow: 0 0 10px rgba(100,181,246,.35); display:grid; place-items:center; }
+    .brand-icon svg { width: 100%; height: 100%; fill: currentColor; color: #eaf2ff; }
+    .brand-lichess { font-size: 28px; line-height: 1; }
 
     .mini { display:flex; align-items:center; gap:.9rem; }
     .avatar { width:64px; height:64px; border-radius: 12px; border:1px solid rgba(255,255,255,.2); object-fit: cover; }
@@ -103,53 +101,60 @@
         <span class="badge">security researcher</span>
         <h1>Shon Gur</h1>
         <p>Reverse engineering • C++/Python tooling • CI/CD • systems. Scroll to watch the background shift as you move through the sections.</p>
-        <p>
-          <a class="btn" href="#profiles">Explore Profiles</a>
-          <a class="btn ghost" href="#contact">Contact</a>
-        </p>
       </div>
     </section>
 
-    <!-- PROFILES -->
+    <!-- PROFILES (LinkedIn left · GitHub right) -->
     <section id="profiles">
       <div class="card">
         <h2>Profiles</h2>
-        <div class="row">
-          <!-- LinkedIn badge (preview only) -->
-          <div>
-            <h3>LinkedIn</h3>
-            <p class="mini" style="margin-bottom:.75rem">
-              <img class="avatar" src="https://logo.clearbit.com/linkedin.com" alt="LinkedIn" />
-              <span>Live profile preview below.</span>
-            </p>
-            <div class="li-wrap" style="margin-bottom:.5rem">
-              <div class="badge-base LI-profile-badge" data-locale="en_US" data-size="medium" data-theme="dark" data-type="HORIZONTAL" data-vanity="shongur" data-version="v1"><a class="badge-base__link LI-simple-link" href="https://www.linkedin.com/in/shongur/">Shon Gur</a></div>
-            </div>
-            <!-- no extra buttons here per request -->
+        <div class="row two-col">
 
-            <h3 style="margin-top:1.1rem">Starred projects (GitHub)</h3>
+          <!-- LEFT: LinkedIn -->
+          <div>
+            <a class="icon-link" href="https://www.linkedin.com/in/shongur/" target="_blank" rel="noreferrer">
+              <span class="brand-icon" aria-hidden="true">
+                <!-- Inline LinkedIn SVG -->
+                <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>LinkedIn</title><path d="M22.225 0H1.771C.792 0 0 .774 0 1.728v20.543C0 23.226.792 24 1.771 24h20.451C23.2 24 24 23.226 24 22.271V1.728C24 .774 23.2 0 22.225 0zM7.064 20.452H3.69V9h3.374v11.452zM5.377 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM20.452 20.452h-3.374v-5.564c0-1.328-.025-3.037-1.853-3.037-1.851 0-2.135 1.447-2.135 2.944v5.657H9.716V9h3.237v1.561h.046c.451-.855 1.555-1.756 3.201-1.756 3.422 0 4.252 2.254 4.252 5.187v6.46z"/></svg>
+              </span>
+              <strong>LinkedIn</strong>
+            </a>
+            <!-- Preview of profile (official badge) -->
+            <div class="li-wrap" style="margin:.25rem 0 .9rem">
+              <div class="badge-base LI-profile-badge" data-locale="en_US" data-size="medium" data-theme="dark" data-type="HORIZONTAL" data-vanity="shongur" data-version="v1">
+                <a class="badge-base__link LI-simple-link" href="https://www.linkedin.com/in/shongur/">Shon Gur</a>
+              </div>
+            </div>
+            <!-- Preview of Projects section: show recently starred repos -->
+            <h3>Projects (Starred)</h3>
             <div id="starred" class="grid" aria-live="polite"></div>
           </div>
 
-          <!-- GitHub dynamic card with pinned repos -->
+          <!-- RIGHT: GitHub -->
           <div>
-            <h3>GitHub</h3>
+            <a class="icon-link" href="https://github.com/ShonGur" target="_blank" rel="noreferrer">
+              <span class="brand-icon" aria-hidden="true">
+                <!-- Inline GitHub SVG (provided by you) -->
+                <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+              </span>
+              <strong>GitHub</strong>
+            </a>
+
+            <!-- Preview of profile (stats) -->
             <div class="mini" style="margin-bottom:.5rem">
               <img id="gh-avatar" class="avatar" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub avatar"/>
               <div>
                 <div id="gh-name" style="font-weight:700">Loading…</div>
                 <div id="gh-login" class="stats">@ShonGur</div>
+                <div class="stats" id="gh-stats" style="margin-top:.25rem">&nbsp;</div>
               </div>
             </div>
-            <p id="gh-bio" style="margin-top:-.25rem">&nbsp;</p>
-            <div class="stats" id="gh-stats">&nbsp;</div>
-            <h3 style="margin-top:1rem">Pinned repositories</h3>
+
+            <!-- Pinned repos -->
+            <h3>Pinned repositories</h3>
             <div id="pinned" class="grid" aria-live="polite"></div>
-            <p style="margin-top:.6rem">
-              <a class="btn" target="_blank" rel="noreferrer" href="https://github.com/ShonGur">Open GitHub</a>
-              <iframe style="vertical-align: middle;" src="https://ghbtns.com/github-btn.html?user=ShonGur&type=follow&count=true" frameborder="0" scrolling="0" width="170" height="20" title="Follow on GitHub"></iframe>
-            </p>
           </div>
+
         </div>
       </div>
     </section>
@@ -158,10 +163,9 @@
     <section id="contact">
       <div class="card">
         <h2>Contact</h2>
-        <p>Prefer email? I read everything.</p>
         <p>
-          <a class="btn" target="_blank" rel="noreferrer" href="https://mail.google.com/mail/?view=cm&fs=1&to=shoncpp@gmail.com&su=Inquiry">Email via Gmail (Subject: Inquiry)</a>
-          <a class="btn ghost" href="mailto:shoncpp@gmail.com?subject=Inquiry">Use default mail app</a>
+          <a style="display:inline-block;padding:.7rem 1rem;border-radius:12px;text-decoration:none;color:#06121c;background:var(--accent-blue);font-weight:700;border:1px solid rgba(0,0,0,.35)" target="_blank" rel="noreferrer" href="https://mail.google.com/mail/?view=cm&fs=1&to=shoncpp@gmail.com&su=Inquiry">Email via Gmail (Subject: Inquiry)</a>
+          <a style="display:inline-block;padding:.7rem 1rem;border-radius:12px;text-decoration:none;color:var(--text);border:1px solid rgba(255,255,255,.18);margin-left:.5rem" href="mailto:shoncpp@gmail.com?subject=Inquiry">Use default mail app</a>
         </p>
       </div>
     </section>
@@ -170,7 +174,8 @@
     <section id="personal">
       <div class="card">
         <h2>Personal</h2>
-        <div class="row">
+        <div class="row two-col">
+
           <!-- Steam -->
           <div>
             <h3>Steam</h3>
@@ -181,45 +186,37 @@
                 <div class="stats" id="steam-level">Level: —</div>
               </div>
             </div>
-            <p>
-              <a class="btn red" target="_blank" rel="noreferrer" href="https://steamcommunity.com/profiles/76561198937367718/">Open in browser</a>
-              <a class="btn ghost" href="steam://openurl/https://steamcommunity.com/profiles/76561198937367718/">Open in Steam client</a>
-            </p>
+            <p><a class="icon-link" href="https://steamcommunity.com/profiles/76561198937367718/" target="_blank" rel="noreferrer"><span>Open profile</span></a></p>
           </div>
 
           <!-- Lichess -->
           <div>
             <h3>Lichess</h3>
             <div class="mini" style="margin-bottom:.5rem">
-              <img class="avatar" src="https://lichess.org/assets/favicon-256.png" alt="Lichess"/>
+              <!-- Inline Lichess-style icon (generic knight) -->
+              <span class="brand-icon brand-lichess" aria-hidden="true">♞</span>
               <div>
                 <div style="font-weight:700">@ShonGur</div>
                 <div class="stats" id="lichess-rapid">Rapid: —</div>
               </div>
             </div>
-            <p>
-              <a class="btn" target="_blank" rel="noreferrer" href="https://lichess.org/@/ShonGur">Open profile</a>
-            </p>
+            <p><a class="icon-link" href="https://lichess.org/@/ShonGur" target="_blank" rel="noreferrer"><span>Open profile</span></a></p>
           </div>
+
         </div>
-        <p style="opacity:.75;margin-top:.75rem">Note: Steam level & avatar require a Steam Web API key to fetch. Add it in the <code>CONFIG.steamApiKey</code> in the script below (never commit secrets to public repos).</p>
       </div>
     </section>
   </main>
 
   <div class="nav-dots" id="dots" aria-hidden="true"></div>
 
-  <!-- LinkedIn badge script -->
-  <script async defer src="https://platform.linkedin.com/badges/js/profile.js"></script>
-
   <script>
-    // --- Configurable handles ---
     const CONFIG = {
       githubUser: 'ShonGur',
       lichessUser: 'ShonGur',
       steamId: '76561198937367718',
-      steamApiKey: '', // <-- Optional. Provide your Steam Web API key to enable level & avatar.
-      pinnedFallback: [] // e.g., ['GDT_Project_Bl','another-repo'] if pinned fetch fails
+      // Cloudflare Worker proxy that hides your Steam API key:
+      steamProxyUrl: 'https://restless-thunder-2f46.shoncpp.workers.dev/'
     };
 
     // Scroll-driven color change: map scroll progress → hue from blue to magenta/red
@@ -273,7 +270,6 @@
           if (d.avatar_url) $('gh-avatar').src = d.avatar_url;
           $('gh-name').textContent = d.name || 'GitHub';
           $('gh-login').textContent = '@' + (d.login || u);
-          $('gh-bio').textContent = d.bio || '';
           $('gh-stats').textContent = `${d.public_repos ?? '-'} repos · ${d.followers ?? '-'} followers`;
         }
 
@@ -284,45 +280,30 @@
           if (pr.ok) pinned = await pr.json();
         } catch(e) {}
 
-        // fallback: top-starred of own repos or manual list
+        // fallback: top-starred of own repos
         if (!Array.isArray(pinned) || !pinned.length) {
-          if (CONFIG.pinnedFallback && CONFIG.pinnedFallback.length) {
-            const arr = await Promise.all(CONFIG.pinnedFallback.map(async name => {
-              const r = await fetch(`https://api.github.com/repos/${u}/${name}`);
-              if (!r.ok) return null;
-              const x = await r.json();
-              return { repo: x.name, description: x.description, stars: x.stargazers_count, language: x.language, link: x.html_url };
-            }));
-            pinned = arr.filter(Boolean);
-          } else {
-            const rr = await fetch(`https://api.github.com/users/${u}/repos?per_page=100&sort=updated`);
-            if (rr.ok) {
-              const all = await rr.json();
-              all.sort((a,b)=> (b.stargazers_count||0)-(a.stargazers_count||0));
-              pinned = all.slice(0,6).map(x=>({ repo:x.name, description:x.description, stars:x.stargazers_count, language:x.language, link:x.html_url }));
-            }
+          const rr = await fetch(`https://api.github.com/users/${u}/repos?per_page=100&sort=updated`);
+          if (rr.ok) {
+            const all = await rr.json();
+            all.sort((a,b)=> (b.stargazers_count||0)-(a.stargazers_count||0));
+            pinned = all.slice(0,6).map(x=>({ repo:x.name, description:x.description, stars:x.stargazers_count, language:x.language, link:x.html_url }));
           }
         }
 
         const pinEl = document.getElementById('pinned');
-        if (pinned && pinned.length) {
-          pinEl.innerHTML = pinned.map(p => `
-            <article class="repo">
-              <h4><a href="${p.link || `https://github.com/${u}/${p.repo}`}" target="_blank" rel="noreferrer">${p.repo}</a></h4>
-              <p style="opacity:.9">${p.description || ''}</p>
-              <div class="meta"><span>★ ${p.stars ?? ''}</span><span>${p.language || ''}</span></div>
-            </article>
-          `).join('');
-        } else {
-          pinEl.textContent = 'No repos to show.';
-        }
+        pinEl.innerHTML = (pinned||[]).map(p => `
+          <article class="repo">
+            <h4><a href="${p.link || `https://github.com/${u}/${p.repo}`}" target="_blank" rel="noreferrer">${p.repo}</a></h4>
+            <p style="opacity:.9">${p.description || ''}</p>
+            <div class="meta"><span>★ ${p.stars ?? ''}</span><span>${p.language || ''}</span></div>
+          </article>
+        `).join('') || 'No repos to show.';
 
         // Recent starred projects (left column under LinkedIn)
         const sr = await fetch(`https://api.github.com/users/${u}/starred?per_page=6`);
         if (sr.ok) {
           const stars = await sr.json();
-          const sEl = document.getElementById('starred');
-          sEl.innerHTML = stars.slice(0,6).map(x => `
+          document.getElementById('starred').innerHTML = stars.slice(0,6).map(x => `
             <article class="repo">
               <h4><a href="${x.html_url}" target="_blank" rel="noreferrer">${x.full_name}</a></h4>
               <p style="opacity:.9">${x.description || ''}</p>
@@ -330,31 +311,20 @@
             </article>
           `).join('');
         }
-      } catch(e) {
-        // silent fail
-      }
+      } catch(e) { /* silent */ }
     })();
 
-    // --- Steam mini (requires optional API key for level/avatar) ---
+    // --- Steam mini via your Cloudflare Worker (keeps API key secret) ---
     (async () => {
-      const key = (CONFIG.steamApiKey || '').trim();
-      const id = CONFIG.steamId;
-      if (!key) return; // no key provided — UI already shows placeholders
       try {
-        const [p1, p2] = await Promise.all([
-          fetch(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${key}&steamids=${id}`),
-          fetch(`https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=${key}&steamid=${id}`)
-        ]);
-        if (p1.ok) {
-          const j = await p1.json();
-          const player = j?.response?.players?.[0];
-          if (player?.avatarfull) document.getElementById('steam-avatar').src = player.avatarfull;
-        }
-        if (p2.ok) {
-          const j2 = await p2.json();
-          const level = j2?.response?.player_level;
-          if (typeof level === 'number') document.getElementById('steam-level').textContent = `Level: ${level}`;
-        }
+        const base = (CONFIG.steamProxyUrl || '').trim();
+        const id = CONFIG.steamId;
+        if (!base) return;
+        const r = await fetch(`${base}?steamid=${encodeURIComponent(id)}`);
+        if (!r.ok) return;
+        const d = await r.json();
+        if (d.avatar) document.getElementById('steam-avatar').src = d.avatar;
+        if (typeof d.level !== 'undefined') document.getElementById('steam-level').textContent = `Level: ${d.level}`;
       } catch(e) {}
     })();
 
@@ -370,5 +340,8 @@
       } catch(e) {}
     })();
   </script>
+
+  <!-- LinkedIn badge script -->
+  <script async defer src="https://platform.linkedin.com/badges/js/profile.js"></script>
 </body>
 </html>
