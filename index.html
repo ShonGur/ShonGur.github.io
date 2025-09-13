@@ -74,9 +74,10 @@
   .site-actions .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem}
   .site-actions .gmail-ico-img{width:18px;height:18px;filter:invert(1) brightness(2)}
   /* Tile clickability */
-  .tile{cursor:pointer;border-radius:20px}
-  .tile:focus{outline:2px solid var(--accent-blue);outline-offset:4px}
-  .tile:hover{outline:1px dashed rgba(100,181,246,.35);outline-offset:4px}
+  .tile{cursor:auto;border-radius:20px}
+  .tile:focus{outline:none}
+  .tile:hover{outline:none}
+#personal .card{border-color:rgba(239,83,80,.35)}
 </style>
 </head>
 <body>
@@ -224,7 +225,7 @@
     </section>
   </main>
 
-  <div class="nav-dots" id="dots" aria-hidden="true"></div>
+  
 
   <script>
     const CONFIG = {
@@ -244,8 +245,7 @@
       const sections = [...document.querySelectorAll('section')];
       const s2 = document.getElementById('profiles');
       const s3 = document.getElementById('personal');
-      const dots = document.getElementById('dots');
-      sections.forEach((sec,i)=>{const b=document.createElement('button');b.setAttribute('aria-label','Go to section '+(i+1));b.addEventListener('click',()=>sec.scrollIntoView({behavior:'smooth',block:'start'}));dots.appendChild(b)});
+      /* nav dots removed */
       const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)); const ss=(e0,e1,x)=>{const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t)};
       const update = () => {
         const y = scrollY;
@@ -277,7 +277,7 @@
           const r = sections[i].getBoundingClientRect();
           if (r.top >= 0 && r.top < innerHeight*0.6) { idx = i; break; }
         }
-        dots.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-current', j===idx));
+        /* nav dots current indicator removed */
       }; let ticking=!1;addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{update();ticking=!1});ticking=!0}},{passive:!0});addEventListener('resize',update);update()})();
 
     // GitHub profile + pinned via your GraphQL worker; hide if none; blacklist a few repos
