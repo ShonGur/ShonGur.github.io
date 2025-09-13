@@ -86,7 +86,7 @@
   <!-- always-on contact actions -->
   <div class="site-actions">
     <a class="primary contact-btn" target="_blank" rel="noreferrer" href="https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL">
-      <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt=""></span>
+      <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/gmail.svg" alt=""></span>
       <span>Contact</span>
     </a>
   </div>
@@ -360,5 +360,26 @@
     })();
   </script>
   <script async defer src="https://platform.linkedin.com/badges/js/profile.js"></script>
+<script>
+  // Contact button: desktop → provided compose draft; mobile → Gmail app, then web compose, then mailto
+  (()=>{
+    const btn=document.querySelector('.contact-btn'); if(!btn) return;
+    const to='shoncpp@gmail.com'; const subject='Inquiry';
+    const longCompose='https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL';
+    const webCompose=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}`;
+    const gmailApp=`googlegmail:///co?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+    const mailto=`mailto:${to}?subject=${encodeURIComponent(subject)}`;
+    const ua=navigator.userAgent||'';
+    const isAndroid=/Android/i.test(ua); const isIOS=/iPhone|iPad|iPod/i.test(ua);
+    const isMobileUA=/Mobile|Tablet|Android|iP(hone|od|ad)/i.test(ua);
+    const isDesktopOS=/(Macintosh|Mac OS X|Windows NT|X11|Linux x86_64)/.test(ua)&&!isAndroid;
+    btn.addEventListener('click',(e)=>{
+      e.preventDefault();
+      if(isDesktopOS && !isMobileUA && !isIOS){ window.open(longCompose,'_blank','noopener'); return; }
+      let fellBack=false; setTimeout(()=>{ if(!fellBack){ window.location.href=webCompose; setTimeout(()=>{ window.location.href=mailto; },1000); fellBack=true; } },700);
+      window.location.href=gmailApp;
+    });
+  })();
+</script>
 </body>
 </html>
