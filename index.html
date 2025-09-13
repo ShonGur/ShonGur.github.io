@@ -15,8 +15,8 @@
     body{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;color:var(--text);min-height:100svh;overflow-x:hidden}
 
     /* ===== Fixed background stack (smoothly crossfaded by JS) ===== */
-    #bg{position:fixed; inset:0; z-index:0; pointer-events:none}
-    #bg .layer{position:absolute; inset:0; opacity:0; transition:opacity .25s linear}
+    #bg{position:fixed; inset:0; z-index:0; pointer-events:none; background:#000}
+    #bg .layer{position:absolute; inset:0; opacity:0; transition:opacity .25s linear; will-change:opacity; backface-visibility:hidden; transform:translateZ(0)}
     /* First screen BLACK */
     #bg .hero{background:linear-gradient(180deg,#000 0%,#000 100%);opacity:var(--layer-hero)}
     /* Profiles screen DEEP BLUE */
@@ -24,21 +24,41 @@
         radial-gradient(900px 600px at 15% -10%, rgba(100,181,246,.03), transparent 40%),
         linear-gradient(180deg,#031225 0%, #020812 100%);
       opacity:var(--layer-blue)}
-    /* Personal screen RED stays the same */
-    #bg .red{background:radial-gradient(900px 600px at 85% 110%, rgba(239,83,80,.12), transparent 40%),linear-gradient(180deg, hsl(330 70% 8%) 0%, hsl(350 70% 3%) 100%);opacity:var(--layer-red)}
+    /* Personal screen RED */
+    #bg .red{background:
+        radial-gradient(900px 600px at 85% 110%, rgba(239,83,80,.12), transparent 40%),
+        linear-gradient(180deg, hsl(330 70% 8%) 0%, hsl(350 70% 3%) 100%);
+      opacity:var(--layer-red)}
 
     /* scanline overlay */
-    body::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px),radial-gradient(circle at 20% 10%, rgba(255,255,255,.015) 0 2px, transparent 3px),radial-gradient(circle at 70% 80%, rgba(255,255,255,.012) 0 2px, transparent 3px);mix-blend-mode:overlay}
+    body::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;background:
+      repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px),
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,.015) 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.012) 0 2px, transparent 3px);
+      mix-blend-mode:overlay}
+    html,body{background:#000;color-scheme:dark}
 
     main{position:relative;z-index:2;scroll-snap-type:y mandatory}
     section{min-height:100svh;display:grid;place-items:center;padding:clamp(3rem,6vw,6rem) 1.25rem;scroll-snap-align:start;position:relative}
 
     /* Always-on actions top-right */
-    .site-actions{position:fixed;top:16px;right:16px;z-index:5;display:flex;gap:.5rem}
-    .site-actions a{display:inline-block;padding:.55rem .9rem;border-radius:10px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.18);color:var(--text);background:rgba(5,8,13,.45);backdrop-filter:saturate(120%) blur(4px)}
-    .site-actions a.primary{background:var(--accent-blue);color:#06121c;border-color:rgba(0,0,0,.35)}
+    .site-actions{position:fixed;top:16px;right:16px;z-index:5;display:flex;align-items:center;gap:.5rem}
+    .site-actions .contact-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:12px;border:1px solid rgba(255,255,255,.18);color:#06121c;background:var(--accent-blue);font-weight:700;cursor:pointer;backdrop-filter:saturate(120%) blur(4px)}
+    .gmail-ico-img{width:18px;height:18px;display:block}
 
-    .card{width:min(1100px,94vw);background:rgba(6,10,16,.82);border:1px solid rgba(100,181,246,.25);border-radius:20px;padding:clamp(1.1rem,2.6vw,2rem);box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03)}
+    /* Contact dropdown (desktop) */
+    .contact-wrap{position:relative}
+    .contact-menu{position:absolute;top:100%;right:0;margin-top:8px;background:rgba(6,10,16,.92);
+      border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.45);
+      width:230px;opacity:0;transform:scale(.96);transform-origin:top right;pointer-events:none;
+      transition:.18s opacity ease,.18s transform ease;overflow:hidden}
+    .contact-wrap.open .contact-menu{opacity:1;transform:scale(1);pointer-events:auto}
+    .contact-menu a{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;color:var(--text);text-decoration:none}
+    .contact-menu a:hover{background:rgba(255,255,255,.06)}
+    .contact-menu small{opacity:.8}
+
+    .card{width:min(1100px,94vw);background:rgba(6,10,16,.82);border:1px solid rgba(100,181,246,.25);
+      border-radius:20px;padding:clamp(1.1rem,2.6vw,2rem);box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03)}
     .badge{display:inline-block;padding:.25rem .5rem;border:1px dashed rgba(100,181,246,.45);color:var(--accent-blue);border-radius:8px;font-weight:600;letter-spacing:.03em}
     h1{font-size:clamp(2rem,6vw,3.4rem);margin:0 0 .5rem;letter-spacing:.02em;display:flex;align-items:center;gap:.75rem;justify-content:center}
     .logo{width:56px;height:56px;border-radius:12px;border:1px solid rgba(255,255,255,.2);object-fit:cover}
@@ -63,17 +83,10 @@
     .nav-dots{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:3}
     .nav-dots button{width:10px;height:10px;border-radius:50%;border:none;opacity:.45;background:var(--accent-blue);cursor:pointer;box-shadow:0 0 8px rgba(100,181,246,.8)}
     .nav-dots button[aria-current="true"]{opacity:1;transform:scale(1.2);background:var(--accent-red);box-shadow:0 0 8px rgba(239,83,80,.8)}
-    @media(prefers-reduced-motion:reduce){.nav-dots{display:none}}
-    /* anti-flash: ensure a solid dark base and GPU compositing */
-  html, body { background:#000; color-scheme: dark; }
-  #bg { background:#000; }
-  #bg .layer { will-change: opacity; backface-visibility: hidden; transform: translateZ(0); }
-  .site-actions .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem}
-  /* Hide LinkedIn fallback text link under the badge */
-  .badge-base__link.LI-simple-link{font-size:0!important;color:transparent!important;line-height:0!important;text-decoration:none!important}
-  .site-actions .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem}
-  .site-actions .gmail-ico-img{width:18px;height:18px;filter:invert(1) brightness(2)}
-</style>
+
+    /* Hide extra text under LinkedIn badge */
+    .badge-base__link.LI-simple-link{font-size:0!important;color:transparent!important;line-height:0!important;text-decoration:none!important}
+  </style>
 </head>
 <body>
   <!-- fixed background layers -->
@@ -85,10 +98,24 @@
 
   <!-- always-on contact actions -->
   <div class="site-actions">
-    <a class="primary contact-btn" target="_blank" rel="noreferrer" href="https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL">
-      <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/gmail.svg" alt=""></span>
-      <span>Contact</span>
-    </a>
+    <div class="contact-wrap">
+      <button class="contact-btn" type="button">
+        <img class="gmail-ico-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail">
+        <span>Contact</span>
+      </button>
+      <!-- Desktop dropdown -->
+      <div class="contact-menu" id="contactMenu" role="menu" aria-hidden="true">
+        <a id="ctaGmail" href="#" role="menuitem">
+          <strong>Gmail</strong> <small>(web compose)</small>
+        </a>
+        <a id="ctaOutlook" href="#" role="menuitem">
+          <strong>Outlook</strong> <small>(web compose)</small>
+        </a>
+        <a id="ctaMailto" href="#" role="menuitem">
+          <strong>Mailto</strong> <small>(default mail app)</small>
+        </a>
+      </div>
+    </div>
   </div>
 
   <main id="app">
@@ -97,7 +124,7 @@
       <div class="card" style="text-align:center">
         <span class="badge">Security Researcher</span>
         <h1><img class="logo" src="assets/security-researcher.png" alt="logo">Shon Gur Arie</h1>
-        <p>Low‑Level Research • C++/Python Tooling • Reverse Engineering.</p>
+        <p>Low-Level Research • C++/Python Tooling • Reverse Engineering.</p>
       </div>
     </section>
 
@@ -114,19 +141,18 @@
               </span>
               <strong>LinkedIn</strong>
             </a>
-            <div class="li-wrap" style="margin:.25rem 0 .9rem">
+            <div class="li-wrap" style="margin:.25rem 0 0">
               <div class="badge-base LI-profile-badge" data-locale="en_US" data-size="medium" data-theme="dark" data-type="HORIZONTAL" data-vanity="shongur" data-version="v1">
-                <a class="badge-base__link LI-simple-link" href="https://www.linkedin.com/in/shongur/">Shon Gur</a>
+                <a class="badge-base__link LI-simple-link" href="https://www.linkedin.com/in/shongur/">.</a>
               </div>
             </div>
-            <h3>Projects (Starred)</h3>
-            <div id="starred" class="grid" aria-live="polite"></div>
           </div>
 
           <!-- GitHub -->
           <div>
             <a class="icon-link" href="https://github.com/ShonGur" target="_blank" rel="noreferrer">
               <span class="brand-icon" aria-hidden="true">
+                <!-- your provided GitHub icon -->
                 <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
               </span>
               <strong>GitHub</strong>
@@ -139,8 +165,8 @@
                 <div class="stats" id="gh-stats" style="margin-top:.25rem">&nbsp;</div>
               </div>
             </div>
-            <h3>Pinned repositories</h3>
-            <div id="pinned" class="grid" aria-live="polite"></div>
+            <h3 id="pinnedTitle" style="display:none">Pinned repositories</h3>
+            <div id="pinned" class="grid" aria-live="polite" style="display:none"></div>
           </div>
         </div>
       </div>
@@ -191,14 +217,14 @@
               <img id="sp-avatar" class="avatar" src="https://developer.spotify.com/images/guidelines/design/icon3@2x.png" alt="Spotify avatar"/>
               <div>
                 <div id="sp-name" style="font-weight:700">Spotify</div>
-                <div class="stats" id="sp-stats">—</div>
-                <div class="stats" id="sp-more">&nbsp;</div>
+                <div class="stats" id="sp-hours">Hours last month: —</div>
+                <div class="stats" id="sp-top">Top artists: —</div>
+                <div class="stats"><button id="sp-connect" style="display:none;padding:.35rem .65rem;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(5,8,13,.45);color:var(--text)">Connect Spotify (owner)</button></div>
               </div>
             </div>
-            <div class="stats"><button id="sp-connect" style="display:none;padding:.35rem .65rem;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(5,8,13,.45);color:var(--text)">Connect Spotify (owner)</button></div>
           </div>
 
-          <!-- Discord -->
+          <!-- Discord (unchanged logic) -->
           <div>
             <a class="icon-link" href="#" id="discord-link" rel="noreferrer">
               <span class="brand-icon" aria-hidden="true">
@@ -229,9 +255,12 @@
       lichessUser: 'ShonGur',
       steamId: '76561198937367718',
       steamProxyUrl: 'https://restless-thunder-2f46.shoncpp.workers.dev/',
-      spotifyUser: 'o4diur3po28i75it7whkdj6rt',
-      spotifyProxyUrl: 'https://flat-cell-c518.shoncpp.workers.dev/spotify/public',
-      // Fill this with your Discord user ID (see instructions below)
+
+      // Workers split by app:
+      spotifyPublicUrl: 'https://flat-cell-c518.shoncpp.workers.dev/spotify/public', // Spotify-only worker
+      githubPinnedUrl:  'https://mute-forest-90cb.shoncpp.workers.dev/pinned',             // GitHub-only worker (replace with yours)
+
+      // Discord
       discordId: '471253673129803776'
     };
 
@@ -251,24 +280,20 @@
         const sectionH = innerHeight;
 
         // Earlier, stronger crossfades with constant-sum behavior
-        // 1) BLACK -> BLUE: start well before section 2, finish shortly before it
-        const t1 = ss(s2Top - sectionH * 0.95, s2Top - sectionH * 0.15, y); // 0..1
-        const t1s = Math.pow(t1, 0.8);   // accelerate fade-in
+        const t1 = ss(s2Top - sectionH * 0.95, s2Top - sectionH * 0.15, y); // black -> blue
+        const t1s = Math.pow(t1, 0.8);
         const hero = 1 - t1s;
         const bluePre = t1s;
 
-        // 2) BLUE -> RED: start before section 3, finish near its top
-        const t2 = ss(s3Top - sectionH * 0.85, s3Top - sectionH * 0.05, y);
-        const t2s = Math.pow(t2, 0.7);   // quicker/clearer handoff
+        const t2 = ss(s3Top - sectionH * 0.85, s3Top - sectionH * 0.05, y); // blue -> red
+        const t2s = Math.pow(t2, 0.7);
         const red  = t2s;
-        const blue = clamp(bluePre * (1 - t2s), 0, 1); // blue holds fully between the two crosses
+        const blue = clamp(bluePre * (1 - t2s), 0, 1);
 
-        // Apply
         root.style.setProperty('--layer-hero', hero.toFixed(3));
         root.style.setProperty('--layer-blue', blue.toFixed(3));
         root.style.setProperty('--layer-red',  red.toFixed(3));
 
-        // nav dots
         let idx = sections.length - 1;
         for (let i=0;i<sections.length;i++){
           const r = sections[i].getBoundingClientRect();
@@ -277,23 +302,93 @@
         dots.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-current', j===idx));
       }; let ticking=!1;addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{update();ticking=!1});ticking=!0}},{passive:!0});addEventListener('resize',update);update()})();
 
-    // GitHub + pinned + starred
-    (async()=>{try{const u=CONFIG.githubUser;const pr=await fetch(`https://api.github.com/users/${u}`);if(pr.ok){const d=await pr.json(),$=id=>document.getElementById(id);if(d.avatar_url)$('gh-avatar').src=d.avatar_url;$('gh-name').textContent=d.name||'GitHub';$('gh-login').textContent='@'+(d.login||u);$('gh-stats').textContent=`${d.public_repos??'-'} repos · ${d.followers??'-'} followers`}let pinned=[];try{const r=await fetch(`https://gh-pinned-repos.egoist.dev/?username=${u}`);if(r.ok)pinned=await r.json()}catch(e){}if(!Array.isArray(pinned)||!pinned.length){const rr=await fetch(`https://api.github.com/users/${u}/repos?per_page=100&sort=updated`);if(rr.ok){const all=await rr.json();all.sort((a,b)=>(b.stargazers_count||0)-(a.stargazers_count||0));pinned=all.slice(0,6).map(x=>({repo:x.name,description:x.description,stars:x.stargazers_count,language:x.language,link:x.html_url}))}}document.getElementById('pinned').innerHTML=(pinned||[]).map(p=>`<article class="repo"><h4><a href="${p.link||`https://github.com/${u}/${p.repo}`}" target="_blank" rel="noreferrer">${p.repo}</a></h4><p style="opacity:.9">${p.description||''}</p><div class="meta"><span>★ ${p.stars??''}</span><span>${p.language||''}</span></div></article>`).join('')||'No repos to show.';const sr=await fetch(`https://api.github.com/users/${u}/starred?per_page=6`);if(sr.ok){const stars=await sr.json();document.getElementById('starred').innerHTML=stars.slice(0,6).map(x=>`<article class="repo"><h4><a href="${x.html_url}" target="_blank" rel="noreferrer">${x.full_name}</a></h4><p style="opacity:.9">${x.description||''}</p><div class="meta"><span>★ ${x.stargazers_count||0}</span><span>${x.language||''}</span></div></article>`).join('')}}catch(e){}})();
-
-    // Steam via Worker
-    (async()=>{try{const base=(CONFIG.steamProxyUrl||'').trim(),id=CONFIG.steamId;if(!base)return;const r=await fetch(`${base}?steamid=${encodeURIComponent(id)}`);if(!r.ok)return;const d=await r.json();if(d.avatar)document.getElementById('steam-avatar').src=d.avatar;if(d.name)document.getElementById('steam-name').textContent=d.name;if(typeof d.level!=='undefined')document.getElementById('steam-level').textContent=`Level: ${d.level}`}catch(e){}})();
-
-    // Lichess Rapid rating
-    (async()=>{try{const u=CONFIG.lichessUser;const r=await fetch(`https://lichess.org/api/user/${encodeURIComponent(u)}`);if(!r.ok)return;const d=await r.json();const rating=d?.perfs?.rapid?.rating;if(rating)document.getElementById('lichess-rapid').textContent=`Rapid: ${rating}`}catch(e){}})();
-
-    // Spotify via Worker (owner OAuth; public fetch)
+    // GitHub profile + pinned (hide completely if none)
     (async()=>{
       try{
-        const base=(CONFIG.spotifyProxyUrl||'').trim();
-        if(!base) return;
-        const r = await fetch(base);
+        const u=CONFIG.githubUser;
+        const pr=await fetch(`https://api.github.com/users/${u}`);
+        if(pr.ok){
+          const d=await pr.json(),$=id=>document.getElementById(id);
+          if(d.avatar_url)$('gh-avatar').src=d.avatar_url;
+          $('gh-name').textContent=d.name||'GitHub';
+          $('gh-login').textContent='@'+(d.login||u);
+          $('gh-stats').textContent=`${d.public_repos??'-'} repos · ${d.followers??'-'} followers`;
+        }
+
+        let pinned=[];
+        // 1) Your GitHub-only worker (GraphQL)
+        try{
+          const r=await fetch(`${CONFIG.githubPinnedUrl}?user=${encodeURIComponent(u)}`, { cache:'no-store' });
+          if(r.ok) pinned=await r.json();
+        }catch(e){}
+        // 2) helper fallback
+        if(!Array.isArray(pinned)||!pinned.length){
+          try{
+            const r=await fetch(`https://gh-pinned-repos.egoist.dev/?username=${u}`);
+            if(r.ok) pinned=await r.json();
+          }catch(e){}
+        }
+        // 3) final fallback: top starred own repos
+        if(!Array.isArray(pinned)||!pinned.length){
+          const rr=await fetch(`https://api.github.com/users/${u}/repos?per_page=100&sort=updated`);
+          if(rr.ok){
+            const all=await rr.json();
+            all.sort((a,b)=>(b.stargazers_count||0)-(a.stargazers_count||0));
+            pinned=all.slice(0,6).map(x=>({repo:x.name,description:x.description,stars:x.stargazers_count,language:x.language,link:x.html_url}));
+          }
+        }
+
+        const title=document.getElementById('pinnedTitle');
+        const grid=document.getElementById('pinned');
+        if(Array.isArray(pinned) && pinned.length){
+          title.style.display='block';
+          grid.style.display='grid';
+          grid.innerHTML=(pinned||[]).map(p=>`
+            <article class="repo">
+              <h4><a href="${p.link||`https://github.com/${u}/${p.repo}`}" target="_blank" rel="noreferrer">${p.repo}</a></h4>
+              <p style="opacity:.9">${p.description||''}</p>
+              <div class="meta"><span>★ ${p.stars??''}</span><span>${p.language||''}</span></div>
+            </article>`).join('');
+        } else {
+          // hide everything if nothing to show
+          title.style.display='none';
+          grid.style.display='none';
+        }
+      }catch(e){}
+    })();
+
+    // Steam via Worker (your existing one)
+    (async()=>{
+      try{
+        const base=(CONFIG.steamProxyUrl||'').trim(),id=CONFIG.steamId;
+        if(!base)return;
+        const r=await fetch(`${base}?steamid=${encodeURIComponent(id)}`);
+        if(!r.ok)return;
+        const d=await r.json();
+        if(d.avatar)document.getElementById('steam-avatar').src=d.avatar;
+        if(d.name)document.getElementById('steam-name').textContent=d.name;
+        if(typeof d.level!=='undefined')document.getElementById('steam-level').textContent=`Level: ${d.level}`;
+      }catch(e){}
+    })();
+
+    // Lichess Rapid rating
+    (async()=>{
+      try{
+        const u=CONFIG.lichessUser;
+        const r=await fetch(`https://lichess.org/api/user/${encodeURIComponent(u)}`);
+        if(!r.ok)return;
+        const d=await r.json();
+        const rating=d?.perfs?.rapid?.rating;
+        if(rating)document.getElementById('lichess-rapid').textContent=`Rapid: ${rating}`;
+      }catch(e){}
+    })();
+
+    // Spotify — last full month hours + top 3 artists (via Spotify-only worker)
+    (async()=>{
+      try{
+        const url=(CONFIG.spotifyPublicUrl||'').trim(); if(!url) return;
+        const r=await fetch(url, { cache:'no-store' });
         if(r.status===401){
-          // Not authorized yet; show connect button (owner only)
           const btn=document.getElementById('sp-connect');
           btn.style.display='inline-block';
           btn.onclick=()=>{ window.open('https://flat-cell-c518.shoncpp.workers.dev/spotify/login','_blank','noopener'); };
@@ -303,83 +398,102 @@
         const d=await r.json();
         if(d.image)document.getElementById('sp-avatar').src=d.image;
         document.getElementById('sp-name').textContent=d.name||'Spotify';
-        const bits=[];
-        if(typeof d.followers==='number') bits.push(`${d.followers} followers`);
-        if(typeof d.playlists==='number') bits.push(`${d.playlists} playlists`);
-        if(typeof d.minutes_24h==='number') bits.push(`${d.minutes_24h} min last 24h`);
-        document.getElementById('sp-stats').textContent=bits.join(' · ')||'—';
-        if(Array.isArray(d.top_artists)&&d.top_artists.length){
-          document.getElementById('sp-more').textContent=`Top artists: ${d.top_artists.slice(0,3).join(', ')}`;
-        } else { document.getElementById('sp-more').textContent=''; }
+        if(typeof d.hours_last_month==='number') document.getElementById('sp-hours').textContent = `Hours last month: ${d.hours_last_month}`;
+        if(Array.isArray(d.top_artists)&&d.top_artists.length) document.getElementById('sp-top').textContent = `Top artists: ${d.top_artists.slice(0,3).join(', ')}`;
       }catch(e){}
     })();
 
-    // Spotify app vs browser
-    (function(){const appUrl='spotify://user/o4diur3po28i75it7whkdj6rt';const webUrl='https://open.spotify.com/user/o4diur3po28i75it7whkdj6rt';const link=document.getElementById('spotify-link');link.addEventListener('click',e=>{e.preventDefault();setTimeout(()=>{window.open(webUrl,'_blank','noopener')},900);window.location.href=appUrl})})();
+    // Spotify app vs browser (icon link)
+    (function(){
+      const appUrl='spotify://user/o4diur3po28i75it7whkdj6rt';
+      const webUrl='https://open.spotify.com/user/o4diur3po28i75it7whkdj6rt';
+      const link=document.getElementById('spotify-link');
+      link.addEventListener('click',e=>{e.preventDefault();setTimeout(()=>{window.open(webUrl,'_blank','noopener')},900);window.location.href=appUrl});
+    })();
 
-    // Discord: fetch avatar/name if discordId is set; click to DM in app
+    // Discord: avatar/name multi-source; DM open
     (async()=>{
-      const id = (CONFIG.discordId||'').trim();
-      const btn = document.getElementById('dc-msg');
-      const lnk = document.getElementById('discord-link');
-      const nameEl = document.getElementById('dc-name');
-      const avEl = document.getElementById('dc-avatar');
-
-      async function j(url){ try{ const r=await fetch(url); if(!r.ok) return null; return await r.json(); }catch(_){ return null; } }
+      const id=(CONFIG.discordId||'').trim();
+      const btn=document.getElementById('dc-msg');
+      const lnk=document.getElementById('discord-link');
+      const nameEl=document.getElementById('dc-name');
+      const avEl=document.getElementById('dc-avatar');
+      async function j(u){ try{ const r=await fetch(u); if(!r.ok) return null; return await r.json(); }catch(_){ return null; } }
 
       if(id){
-        // Try multiple public providers for best chance at CORS + fresh data
-        let d = await j(`https://discordlookup.mesavirep.xyz/v1/user/${id}`);
-        if(d && (d.avatar || d.global_name || d.username)){
-          const avatarUrl = d.avatar && d.avatar.startsWith('http') ? d.avatar : (d.avatar ? `https://cdn.discordapp.com/avatars/${id}/${d.avatar}.png?size=128` : `https://cdn.discordapp.com/embed/avatars/0.png`);
-          if(avEl) avEl.src = avatarUrl;
-          if(nameEl) nameEl.textContent = d.global_name || d.username || 'sweatycs';
-        } else {
-          const d2 = await j(`https://japi.rest/discord/v1/user/${id}`);
-          const u = d2 && d2.data;
+        let d=await j(`https://discordlookup.mesavirep.xyz/v1/user/${id}`);
+        if(d && (d.avatar||d.global_name||d.username)){
+          const avatarUrl=d.avatar && d.avatar.startsWith('http')? d.avatar : (d.avatar?`https://cdn.discordapp.com/avatars/${id}/${d.avatar}.png?size=128`:`https://cdn.discordapp.com/embed/avatars/0.png`);
+          if(avEl) avEl.src=avatarUrl;
+          if(nameEl) nameEl.textContent=d.global_name||d.username||'sweatycs';
+        }else{
+          const d2=await j(`https://japi.rest/discord/v1/user/${id}`);
+          const u=d2&&d2.data;
           if(u){
-            const avatarUrl = u.avatarURL || `https://cdn.discordapp.com/embed/avatars/${(Number(u.discriminator)||0)%5}.png`;
-            if(avEl) avEl.src = avatarUrl;
-            if(nameEl) nameEl.textContent = u.global_name || u.username || 'sweatycs';
-          } else {
-            const d3 = await j(`https://api.lanyard.rest/v1/users/${id}`);
-            const u3 = d3 && d3.data && d3.data.discord_user;
+            const avatarUrl=u.avatarURL||`https://cdn.discordapp.com/embed/avatars/${(Number(u.discriminator)||0)%5}.png`;
+            if(avEl) avEl.src=avatarUrl;
+            if(nameEl) nameEl.textContent=u.global_name||u.username||'sweatycs';
+          }else{
+            const d3=await j(`https://api.lanyard.rest/v1/users/${id}`);
+            const u3=d3&&d3.data&&d3.data.discord_user;
             if(u3){
-              const avatar = u3.avatar ? `https://cdn.discordapp.com/avatars/${id}/${u3.avatar}.png?size=128` : `https://cdn.discordapp.com/embed/avatars/0.png`;
-              if(avEl) avEl.src = avatar;
-              if(nameEl) nameEl.textContent = u3.global_name || u3.username || 'sweatycs';
+              const a=u3.avatar?`https://cdn.discordapp.com/avatars/${id}/${u3.avatar}.png?size=128`:`https://cdn.discordapp.com/embed/avatars/0.png`;
+              if(avEl) avEl.src=a;
+              if(nameEl) nameEl.textContent=u3.global_name||u3.username||'sweatycs';
             }
           }
         }
-        if(lnk) lnk.href = `https://discord.com/users/${id}`;
-        if(btn) btn.onclick = async ()=>{ try{ await navigator.clipboard.writeText('sweatycs'); }catch(_){} window.location.href = `discord://-/users/${id}`; };
+        if(lnk) lnk.href=`https://discord.com/users/${id}`;
+        if(btn) btn.onclick=async()=>{ try{ await navigator.clipboard.writeText('sweatycs'); }catch(_){} window.location.href=`discord://-/users/${id}`; };
       } else {
-        if(btn) btn.onclick = async ()=>{ try{ await navigator.clipboard.writeText('sweatycs'); }catch(_){} window.location.href = 'discord://'; };
-        if(lnk) { lnk.onclick = (e)=>{ e.preventDefault(); window.location.href = 'discord://'; }; }
+        if(btn) btn.onclick=async()=>{ try{ await navigator.clipboard.writeText('sweatycs'); }catch(_){} window.location.href='discord://'; };
+        if(lnk){ lnk.onclick=(e)=>{ e.preventDefault(); window.location.href='discord://'; }; }
       }
     })();
+
+    // Contact button behavior
+    (function(){
+      const wrap=document.querySelector('.contact-wrap');
+      const btn=wrap.querySelector('.contact-btn');
+      const menu=wrap.querySelector('#contactMenu');
+
+      const to='shoncpp@gmail.com', subject='Inquiry';
+      const gmailLong='https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL';
+      const gmailWeb=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}`;
+      const outlookWeb=`https://outlook.live.com/owa/?path=/mail/action/compose&to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+      const mailto=`mailto:${to}?subject=${encodeURIComponent(subject)}`;
+      const gmailApp=`googlegmail:///co?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+
+      const ua=navigator.userAgent||'';
+      const isAndroid=/Android/i.test(ua);
+      const isIOS=/iPhone|iPad|iPod/i.test(ua);
+      const isMobileUA=/Mobile|Tablet|Android|iP(hone|od|ad)/i.test(ua);
+      const isDesktopOS=/(Macintosh|Mac OS X|Windows NT|X11|Linux x86_64)/.test(ua)&&!isAndroid;
+
+      // desktop: show menu; mobile: go to app with fallbacks
+      btn.addEventListener('click',(e)=>{
+        e.preventDefault();
+        if(isDesktopOS && !isMobileUA && !isIOS){
+          wrap.classList.toggle('open');
+          menu.setAttribute('aria-hidden', wrap.classList.contains('open') ? 'false' : 'true');
+        } else {
+          let fellBack=false;
+          setTimeout(()=>{ if(!fellBack){ window.location.href=gmailWeb; setTimeout(()=>{ window.location.href=mailto; },900); fellBack=true; } },700);
+          window.location.href=gmailApp;
+        }
+      });
+
+      // menu actions
+      document.getElementById('ctaGmail').addEventListener('click',(e)=>{ e.preventDefault(); window.open(gmailLong,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+      document.getElementById('ctaOutlook').addEventListener('click',(e)=>{ e.preventDefault(); window.open(outlookWeb,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+      document.getElementById('ctaMailto').addEventListener('click',(e)=>{ e.preventDefault(); window.location.href=mailto; wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+
+      // close on outside / escape
+      document.addEventListener('click',(ev)=>{ if(!wrap.contains(ev.target)) { wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); } }, {passive:true});
+      document.addEventListener('keydown',(ev)=>{ if(ev.key==='Escape'){ wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); }});
+    })();
   </script>
+
   <script async defer src="https://platform.linkedin.com/badges/js/profile.js"></script>
-<script>
-  // Contact button: desktop → provided compose draft; mobile → Gmail app, then web compose, then mailto
-  (()=>{
-    const btn=document.querySelector('.contact-btn'); if(!btn) return;
-    const to='shoncpp@gmail.com'; const subject='Inquiry';
-    const longCompose='https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL';
-    const webCompose=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}`;
-    const gmailApp=`googlegmail:///co?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
-    const mailto=`mailto:${to}?subject=${encodeURIComponent(subject)}`;
-    const ua=navigator.userAgent||'';
-    const isAndroid=/Android/i.test(ua); const isIOS=/iPhone|iPad|iPod/i.test(ua);
-    const isMobileUA=/Mobile|Tablet|Android|iP(hone|od|ad)/i.test(ua);
-    const isDesktopOS=/(Macintosh|Mac OS X|Windows NT|X11|Linux x86_64)/.test(ua)&&!isAndroid;
-    btn.addEventListener('click',(e)=>{
-      e.preventDefault();
-      if(isDesktopOS && !isMobileUA && !isIOS){ window.open(longCompose,'_blank','noopener'); return; }
-      let fellBack=false; setTimeout(()=>{ if(!fellBack){ window.location.href=webCompose; setTimeout(()=>{ window.location.href=mailto; },1000); fellBack=true; } },700);
-      window.location.href=gmailApp;
-    });
-  })();
-</script>
 </body>
 </html>
