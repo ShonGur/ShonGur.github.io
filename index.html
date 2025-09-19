@@ -83,10 +83,11 @@
   .site-actions .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem}
   .site-actions .gmail-ico-img{width:18px;height:18px;filter:invert(1) brightness(2)}
   /* Tile clickability */
-  .tile{cursor:pointer;border-radius:20px}
-  .tile:focus{outline:none;box-shadow:none}
-  .tile:hover{outline:none;box-shadow:none}
+  .tile{cursor:pointer;border-radius:20px;transition:transform .18s ease, filter .18s ease;will-change:transform,filter}
+  .tile:focus{outline:none;box-shadow:none;transform:translateZ(0) scale(1.01);filter:brightness(1.02)}
+  .tile:hover{outline:none;box-shadow:none;transform:translateZ(0) scale(1.01);filter:brightness(1.02)}
 #personal .card{border-color:rgba(239,83,80,.35)}
+@media (prefers-reduced-motion: reduce){.tile{transition:none}.tile:hover,.tile:focus{transform:none;filter:none}}
 </style>
 </head>
 <body>
