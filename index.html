@@ -37,6 +37,15 @@
     .site-actions{position:fixed;top:16px;right:16px;z-index:5;display:flex;gap:.5rem}
     .site-actions a{display:inline-block;padding:.55rem .9rem;border-radius:10px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.18);color:var(--text);background:rgba(5,8,13,.45);backdrop-filter:saturate(120%) blur(4px)}
     .site-actions a.primary{background:var(--accent-blue);color:#06121c;border-color:rgba(0,0,0,.35)}
+    .contact-wrap{position:relative}
+    .contact-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:12px;border:1px solid rgba(255,255,255,.18);color:#06121c;background:var(--accent-blue);font-weight:700;cursor:pointer;backdrop-filter:saturate(120%) blur(4px)}
+    .contact-menu{position:absolute;top:100%;right:0;margin-top:8px;background:rgba(6,10,16,.92);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.45);width:auto;opacity:0;transform:scale(.96);transform-origin:top right;pointer-events:none;transition:.18s opacity ease,.18s transform ease;overflow:hidden;display:flex;gap:8px;padding:10px}
+    .contact-wrap.open .contact-menu{opacity:1;transform:scale(1);pointer-events:auto}
+    .contact-menu a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.04)}
+    .contact-menu a:hover{background:rgba(255,255,255,.10)}
+    .contact-menu .menu-ico, .contact-menu svg{width:26px;height:26px}
+    .contact-menu small{display:none}
+    .site-actions a.primary{background:var(--accent-blue);color:#06121c;border-color:rgba(0,0,0,.35)}
 
     .card{width:min(1100px,94vw);background:rgba(6,10,16,.82);border:1px solid rgba(100,181,246,.25);border-radius:20px;padding:clamp(1.1rem,2.6vw,2rem);box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03)}
     .badge{display:inline-block;padding:.25rem .5rem;border:1px dashed rgba(100,181,246,.45);color:var(--accent-blue);border-radius:8px;font-weight:600;letter-spacing:.03em}
@@ -90,10 +99,23 @@
 
   <!-- always-on contact actions -->
   <div class="site-actions">
-    <a class="primary contact-btn" target="_blank" rel="noreferrer" href="https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL">
-      <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/gmail.svg" alt=""></span>
-      <span>Contact</span>
-    </a>
+    <div class="contact-wrap">
+      <button class="contact-btn" type="button">
+        <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt=""></span>
+        <span>Contact</span>
+      </button>
+      <div class="contact-menu" id="contactMenu" role="menu" aria-hidden="true">
+        <a id="ctaGmail" href="#" role="menuitem" aria-label="Compose in Gmail">
+          <img class="menu-ico" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="">
+        </a>
+        <a id="ctaOutlook" href="#" role="menuitem" aria-label="Compose in Outlook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.5 3h-6A1.5 1.5 0 0 0 9 4.5V7h7.5A1.5 1.5 0 0 1 18 8.5V17h1.5A1.5 1.5 0 0 0 21 15.5v-9A3.5 3.5 0 0 0 17.5 3h-1z"></path><path fill="currentColor" d="M2 8.5A1.5 1.5 0 0 1 3.5 7H18v8.5A1.5 1.5 0 0 1 16.5 17H3.5A1.5 1.5 0 0 1 2 15.5v-7zM6.75 9A3.75 3.75 0 1 0 10.5 12.75 3.75 3.75 0 0 0 6.75 9zm0 1.5A2.25 2.25 0 1 1 4.5 12.75 2.25 2.25 0 0 1 6.75 10.5z"></path></svg>
+        </a>
+        <a id="ctaMailto" href="#" role="menuitem" aria-label="Compose with default mail app">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11zm2.4.3 7.1 5.03a1 1 0 0 0 1 0l7.1-5.03a1 1 0 0 0-.6-1.8h-14a1 1 0 0 0-.6 1.8z"></path></svg>
+        </a>
+      </div>
+    </div>
   </div>
 
   <main id="app">
@@ -275,11 +297,14 @@
         root.style.setProperty('--layer-red',  red.toFixed(3));
 
         // nav dots
-        let idx = sections.length - 1;
-        for (let i=0;i<sections.length;i++){
-          const r = sections[i].getBoundingClientRect();
-          if (r.top >= 0 && r.top < innerHeight*0.6) { idx = i; break; }
+        // Stable: pick the section whose center is closest to viewport center
+        let best={i:0,dist:Infinity};
+        for(let i=0;i<sections.length;i++){
+          const r=sections[i].getBoundingClientRect();
+          const c=r.top + r.height/2; const d=Math.abs(c - innerHeight/2);
+          if(d<best.dist) best={i,dist:d};
         }
+        const idx=best.i;
         dots.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-current', j===idx));
       }; let ticking=!1;addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{update();ticking=!1});ticking=!0}},{passive:!0});addEventListener('resize',update);update()})();
 
@@ -418,24 +443,43 @@
 </script>
 <script async defer src="https://platform.linkedin.com/badges/js/profile.js"></script>
 <script>
-  // Contact button: desktop → provided compose draft; mobile → Gmail app, then web compose, then mailto
-  (()=>{
-    const btn=document.querySelector('.contact-btn'); if(!btn) return;
-    const to='shoncpp@gmail.com'; const subject='Inquiry';
-    const longCompose='https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL';
-    const webCompose=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}`;
-    const gmailApp=`googlegmail:///co?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+  // Contact button behavior (desktop dropdown icons; mobile Gmail app with fallbacks)
+  (function(){
+    const wrap=document.querySelector('.contact-wrap'); if(!wrap) return;
+    const btn=wrap.querySelector('.contact-btn');
+    const menu=wrap.querySelector('#contactMenu');
+
+    const to='shoncpp@gmail.com', subject='Inquiry';
+    const gmailLong='https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL';
+    const gmailWeb=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}`;
+    const outlookWeb=`https://outlook.live.com/owa/?path=/mail/action/compose&to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
     const mailto=`mailto:${to}?subject=${encodeURIComponent(subject)}`;
+    const gmailApp=`googlegmail:///co?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+
     const ua=navigator.userAgent||'';
-    const isAndroid=/Android/i.test(ua); const isIOS=/iPhone|iPad|iPod/i.test(ua);
+    const isAndroid=/Android/i.test(ua);
+    const isIOS=/iPhone|iPad|iPod/i.test(ua);
     const isMobileUA=/Mobile|Tablet|Android|iP(hone|od|ad)/i.test(ua);
     const isDesktopOS=/(Macintosh|Mac OS X|Windows NT|X11|Linux x86_64)/.test(ua)&&!isAndroid;
+
     btn.addEventListener('click',(e)=>{
       e.preventDefault();
-      if(isDesktopOS && !isMobileUA && !isIOS){ window.open(longCompose,'_blank','noopener'); return; }
-      let fellBack=false; setTimeout(()=>{ if(!fellBack){ window.location.href=webCompose; setTimeout(()=>{ window.location.href=mailto; },1000); fellBack=true; } },700);
-      window.location.href=gmailApp;
+      if(isDesktopOS && !isMobileUA && !isIOS){
+        wrap.classList.toggle('open');
+        menu.setAttribute('aria-hidden', wrap.classList.contains('open') ? 'false' : 'true');
+      } else {
+        let fellBack=false;
+        setTimeout(()=>{ if(!fellBack){ window.location.href=gmailWeb; setTimeout(()=>{ window.location.href=mailto; },900); fellBack=true; } },700);
+        window.location.href=gmailApp;
+      }
     });
+
+    document.getElementById('ctaGmail').addEventListener('click',(e)=>{ e.preventDefault(); window.open(gmailLong,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+    document.getElementById('ctaOutlook').addEventListener('click',(e)=>{ e.preventDefault(); window.open(outlookWeb,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+    document.getElementById('ctaMailto').addEventListener('click',(e)=>{ e.preventDefault(); window.location.href=mailto; wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+
+    document.addEventListener('click',(ev)=>{ if(!wrap.contains(ev.target)) { wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); } }, {passive:true});
+    document.addEventListener('keydown',(ev)=>{ if(ev.key==='Escape'){ wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); }});
   })();
 </script>
 </body>
