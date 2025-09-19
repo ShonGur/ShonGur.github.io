@@ -43,7 +43,7 @@
     .contact-wrap.open .contact-menu{opacity:1;transform:scale(1);pointer-events:auto}
     .contact-menu a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.04)}
     .contact-menu a:hover{background:rgba(255,255,255,.10)}
-    .contact-menu .menu-ico, .contact-menu svg{width:26px;height:26px}
+    .contact-menu .menu-ico, .contact-menu svg{width:26px;height:26px;filter:none !important;mix-blend-mode:normal !important}
     .contact-menu small{display:none}
     .site-actions a.primary{background:var(--accent-blue);color:#06121c;border-color:rgba(0,0,0,.35)}
 
@@ -81,7 +81,8 @@
   /* Hide LinkedIn fallback text link under the badge */
   .badge-base__link.LI-simple-link{font-size:0!important;color:transparent!important;line-height:0!important;text-decoration:none!important}
   .site-actions .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem}
-  .site-actions .gmail-ico-img{width:18px;height:18px;filter:invert(1) brightness(2)}
+  .site-actions .gmail-ico{display:inline-grid;place-items:center;width:22px;height:22px;background:transparent;box-shadow:none;border-radius:6px}
+.gmail-ico-img{width:18px;height:18px;display:block;filter:none !important;mix-blend-mode:normal !important}
   /* Tile clickability */
   .tile{cursor:pointer;border-radius:20px;transition:transform .18s ease, filter .18s ease;will-change:transform,filter}
   .tile:focus{outline:none;box-shadow:none;transform:translateZ(0) scale(1.01);filter:brightness(1.02)}
