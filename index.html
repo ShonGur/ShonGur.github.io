@@ -376,7 +376,7 @@
         if(d.image)document.getElementById('sp-avatar').src=d.image;
         document.getElementById('sp-name').textContent=d.name||'Spotify';
         if(typeof d.hours_last_month==='number'){
-          document.getElementById('sp-stats').textContent=`Hours last month: ${d.hours_last_month}`;
+          document.getElementById('sp-stats').textContent=`Hours last month: ${d.hours_last_month / 60}`;
         } else {
           document.getElementById('sp-stats').textContent='Hours last month: —';
         }
