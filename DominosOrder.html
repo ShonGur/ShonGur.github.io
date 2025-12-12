@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Domino's API — One-Button Order</title>
+  <meta name="description" content="Workflow notes for automating a one-button Domino's Pizza order via the API." />
+  <link rel="preload" as="image" href="assets/security-researcher.png">
+  <style>
+    :root{--text:#eaf2ff;--accent-blue:#64b5f6;--accent-red:#ef5350;--layer-hero:1;--layer-blue:0;--layer-red:0;
+      --nav-hover: color-mix(in srgb,
+        rgba(100,181,246, calc(.22 + .6 * var(--layer-blue))) 58%,
+        rgba(239,83,80,  calc(.18 + .6 * var(--layer-red))) 42%
+      );}
+    *{box-sizing:border-box}html,body{height:100%;margin:0}
+    body{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;color:var(--text);min-height:100svh;overflow-x:hidden}
+    #bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+    #bg .layer{position:absolute;inset:0;opacity:0;transition:opacity .25s linear}
+    #bg .hero{background:linear-gradient(180deg,#000 0%,#000 100%);opacity:var(--layer-hero)}
+    #bg .blue{background:radial-gradient(900px 600px at 15% -10%, rgba(100,181,246,.03), transparent 40%),linear-gradient(180deg,#031225 0%, #020812 100%);opacity:var(--layer-blue)}
+    #bg .red{background:radial-gradient(900px 600px at 85% 110%, rgba(239,83,80,.12), transparent 40%),linear-gradient(180deg, hsl(330 70% 8%) 0%, hsl(350 70% 3%) 100%);opacity:var(--layer-red)}
+    body::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px),radial-gradient(circle at 20% 10%, rgba(255,255,255,.015) 0 2px, transparent 3px),radial-gradient(circle at 70% 80%, rgba(255,255,255,.012) 0 2px, transparent 3px);mix-blend-mode:overlay}
+    main{position:relative;z-index:2;padding:clamp(3rem,6vw,6rem) 1.25rem;display:grid;place-items:center;min-height:100svh}
+    .card{width:min(1100px,94vw);background:rgba(6,10,16,.82);border:1px solid rgba(100,181,246,.25);border-radius:20px;padding:clamp(1.1rem,2.6vw,2rem);box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03)}
+    .badge{display:inline-block;padding:.25rem .5rem;border:1px dashed rgba(100,181,246,.45);color:var(--accent-blue);border-radius:8px;font-weight:600;letter-spacing:.03em}
+    h1{font-size:clamp(2rem,6vw,3.4rem);margin:0 0 .5rem;letter-spacing:.02em;display:flex;align-items:center;gap:.75rem}
+    .logo{width:56px;height:56px;border-radius:12px;border:1px solid rgba(255,255,255,.2);object-fit:cover}
+    h2{font-size:clamp(1.3rem,4vw,2rem);margin:1.6rem 0 .5rem}
+    p{margin:0 0 1rem;line-height:1.7;opacity:.96}
+    ul{margin:0 0 1.25rem;padding-left:1.1rem;line-height:1.7}
+    code{background:rgba(255,255,255,.06);padding:.18rem .35rem;border-radius:8px;border:1px solid rgba(255,255,255,.12)}
+    pre{background:rgba(0,0,0,.45);padding:.9rem;border-radius:12px;border:1px solid rgba(255,255,255,.12);overflow:auto}
+
+    .top-nav{position:fixed;top:14px;left:16px;right:16px;z-index:6;display:flex;align-items:center;gap:.65rem;padding:.45rem .55rem;border:1px solid rgba(255,255,255,.14);background:color-mix(in srgb, transparent 78%, rgba(6,10,16,.92));backdrop-filter:blur(10px) saturate(120%);border-radius:14px;box-shadow:0 15px 30px rgba(0,0,0,.35)}
+    .top-nav a,.top-nav button{font-weight:700;text-decoration:none;color:var(--text);background:transparent;border:none;padding:.45rem .7rem;border-radius:10px;display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;transition:background .16s ease, color .16s ease, mix-blend-mode .16s ease}
+    .top-nav a:hover,.top-nav button:hover,.top-nav a:focus-visible,.top-nav button:focus-visible{background:rgba(255,255,255,.08);outline:none;color:var(--nav-hover);mix-blend-mode:screen}
+    .nav-dropdown{position:relative}
+    .dropdown-panel{position:absolute;top:100%;left:0;min-width:220px;max-width:280px;background:color-mix(in srgb, transparent 70%, rgba(6,10,16,.96));border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.55);padding:.65rem;opacity:0;transform:translateY(-6px);pointer-events:none;transition:.16s ease opacity,.16s ease transform}
+    .nav-dropdown:hover .dropdown-panel,.nav-dropdown:focus-within .dropdown-panel{opacity:1;transform:translateY(0);pointer-events:auto}
+    .dropdown-item{display:block;text-decoration:none;color:var(--text);padding:.5rem .55rem;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);transition:background .16s ease,border-color .16s ease}
+    .dropdown-item:hover,.dropdown-item:focus-visible{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);outline:none;color:var(--nav-hover);mix-blend-mode:screen}
+    .dropdown-item h4{margin:.05rem 0 .1rem;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+
+    .contact-wrap{position:relative;margin-left:auto}
+    .contact-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:12px;border:1px solid rgba(255,255,255,.18);color:#06121c;background:var(--accent-blue);font-weight:700;cursor:pointer;backdrop-filter:saturate(120%) blur(4px)}
+    .contact-menu{position:absolute;top:100%;right:0;margin-top:8px;background:rgba(6,10,16,.92);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.45);width:auto;opacity:0;transform:scale(.96);transform-origin:top right;pointer-events:none;transition:.18s opacity ease,.18s transform ease;overflow:hidden;display:flex;gap:8px;padding:10px}
+    .contact-wrap.open .contact-menu{opacity:1;transform:scale(1);pointer-events:auto}
+    .contact-menu a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.04)}
+    .contact-menu a:hover{background:rgba(255,255,255,.10)}
+    .contact-menu .menu-ico, .contact-menu svg{width:26px;height:26px;filter:none!important;mix-blend-mode:normal!important}
+    .contact-menu small{display:none}
+    .contact-btn .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem;width:22px;height:22px;background:transparent;box-shadow:none;border-radius:6px}
+    .gmail-ico-img{width:18px;height:18px;display:block;filter:none !important;mix-blend-mode:normal !important}
+  </style>
+</head>
+<body>
+  <div id="bg" aria-hidden="true">
+    <div class="layer hero"></div>
+    <div class="layer blue"></div>
+    <div class="layer red"></div>
+  </div>
+
+  <nav class="top-nav" aria-label="Primary">
+    <a href="index.html#s1">Home</a>
+    <div class="nav-dropdown">
+      <button type="button" aria-haspopup="true" aria-expanded="false">Research ▾</button>
+      <div class="dropdown-panel" role="menu">
+        <a class="dropdown-item" href="DominosOrder.html" role="menuitem">
+          <h4>Domino's one-button order</h4>
+        </a>
+      </div>
+    </div>
+    <div class="contact-wrap">
+      <button class="contact-btn" type="button">
+        <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail icon"></span>
+        <span>Contact</span>
+      </button>
+      <div class="contact-menu" id="contactMenu" role="menu" aria-hidden="true">
+        <a id="ctaGmail" href="#" role="menuitem" aria-label="Compose in Gmail">
+          <img class="menu-ico" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="">
+        </a>
+        <a id="ctaOutlook" href="#" role="menuitem" aria-label="Compose in Outlook">
+          <svg class="menu-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="#0a63d8" d="M3 6.75A2.75 2.75 0 0 1 5.75 4h10.5A2.75 2.75 0 0 1 19 6.75v10.5A2.75 2.75 0 0 1 16.25 20H5.75A2.75 2.75 0 0 1 3 17.25z" opacity=".75"></path>
+            <path fill="#0a63d8" d="M20 7.5v8.85c0 .41-.45.66-.8.42l-4.7-3.28-2.7 2.08a1 1 0 0 1-1.2 0L8.9 12.6 6 14.75V7.5c0-.83.67-1.5 1.5-1.5h11c.83 0 1.5.67 1.5 1.5z" opacity=".95"></path>
+            <path fill="#f7fbff" d="M10.35 10.26c-.37-.41-.87-.66-1.43-.66-1.19 0-2.1 1-2.1 2.4s.91 2.42 2.1 2.42c.56 0 1.06-.22 1.43-.64V15h.95v-4.8h-.95zm-.02 2.74c-.25.39-.59.6-.97.6-.69 0-1.2-.57-1.2-1.58 0-.99.51-1.56 1.2-1.56.38 0 .72.2.97.59z"></path>
+          </svg>
+        </a>
+        <a id="ctaMailto" href="mailto:shoncpp@gmail.com?subject=Inquiry" role="menuitem" aria-label="Compose with default mail app">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11zm2.4.3 7.1 5.03a1 1 0 0 0 1 0l7.1-5.03a1 1 0 0 0-.6-1.8h-14a1 1 0 0 0-.6 1.8z"></path></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="card">
+      <span class="badge">Automation write-up</span>
+      <h1><img class="logo" src="assets/security-researcher.png" alt="logo">Domino's one-button order</h1>
+      <p>This note captures the flow I used to trigger a full Domino's Pizza order with a single action using their exposed API endpoints. It keeps the UI minimal while automating cart creation, store selection, and payment authorization.</p>
+
+      <h2>Key flow</h2>
+      <ul>
+        <li>Authenticate once with the Domino's customer API and store the returned <code>customerId</code>, store <code>addressId</code>, and payment token (wallet / card nonce).</li>
+        <li>Build a reusable order payload with preferred items and quantities. Reuse Domino's menu IDs so items stay stable even if names change.</li>
+        <li>On button press, call <code>/power/store-locator</code> to confirm the nearest store that can fulfill the order and obtain its <code>StoreID</code>.</li>
+        <li>Create the order via <code>/power/place-order</code> using the stored profile, address, and payment token. Set <code>ServiceMethod</code> to <code>Delivery</code> or <code>Carryout</code> as desired.</li>
+        <li>Poll <code>/order/{OrderID}/status</code> to surface baking/quality check/ready statuses for optional notifications.</li>
+      </ul>
+
+      <h2>Example request shape</h2>
+      <pre><code>{
+  "StoreID": "1234",
+  "ServiceMethod": "Delivery",
+  "CustomerID": "&lt;customerId&gt;",
+  "Address": { "Street": "...", "City": "...", "Region": "...", "PostalCode": "..." },
+  "OrderPayment": {
+    "Type": "Wallet",
+    "PaymentToken": "&lt;token&gt;",
+    "Amount": 23.45
+  },
+  "Products": [
+    { "Code": "14SCREEN", "Qty": 1, "Options": { "X": { "1/1": "1" }, "P": { "1/1": "1" } } },
+    { "Code": "2LDCOKE", "Qty": 1 }
+  ]
+}</code></pre>
+
+      <h2>Hardening notes</h2>
+      <ul>
+        <li>Throttle to one active order at a time per account to avoid duplicate charges.</li>
+        <li>Expire cached store lookups after 30 minutes so a closed store is not reused.</li>
+        <li>Surface failures with the API error code and message; Domino's returns structured details that help distinguish validation vs. payment issues.</li>
+        <li>Keep the button UX simple—trigger the API call, then show a status chip fed by the polling loop.</li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    (()=>{
+      const dd=document.querySelector('.nav-dropdown');
+      if(!dd) return;
+      const btn=dd.querySelector('button');
+      const panel=dd.querySelector('.dropdown-panel');
+      const set=open=>{
+        if(btn) btn.setAttribute('aria-expanded', open?'true':'false');
+        if(panel) panel.setAttribute('aria-hidden', open?'false':'true');
+      };
+      set(false);
+      dd.addEventListener('mouseenter',()=>set(true));
+      dd.addEventListener('mouseleave',()=>set(false));
+      dd.addEventListener('focusin',()=>set(true));
+      dd.addEventListener('focusout',e=>{ if(!dd.contains(e.relatedTarget)) set(false); });
+    })();
+
+  // Contact button behavior (desktop dropdown icons; mobile Gmail app with fallbacks)
+  (function(){
+    const wrap=document.querySelector('.contact-wrap'); if(!wrap) return;
+    const btn=wrap.querySelector('.contact-btn');
+    const menu=wrap.querySelector('#contactMenu');
+
+    const to='shoncpp@gmail.com', subject='Inquiry';
+    const gmailLong='https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL';
+    const gmailWeb=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}`;
+    const outlookWeb=`https://outlook.live.com/owa/?path=/mail/action/compose&to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+    const mailto=`mailto:${to}?subject=${encodeURIComponent(subject)}`;
+    const gmailApp=`googlegmail:///co?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+
+    const ua=navigator.userAgent||'';
+    const isAndroid=/Android/i.test(ua);
+    const isIOS=/iPhone|iPad|iPod/i.test(ua);
+    const isMobileUA=/Mobile|Tablet|Android|iP(hone|od|ad)/i.test(ua);
+    const isDesktopOS=/(Macintosh|Mac OS X|Windows NT|X11|Linux x86_64)/.test(ua)&&!isAndroid;
+
+    btn.addEventListener('click',(e)=>{
+      e.preventDefault();
+      if(isDesktopOS && !isMobileUA && !isIOS){
+        wrap.classList.toggle('open');
+        menu.setAttribute('aria-hidden', wrap.classList.contains('open') ? 'false' : 'true');
+      } else {
+        let fellBack=false;
+        setTimeout(()=>{ if(!fellBack){ window.location.href=gmailWeb; setTimeout(()=>{ window.location.href=mailto; },900); fellBack=true; } },700);
+        window.location.href=gmailApp;
+      }
+    });
+
+    document.getElementById('ctaGmail').addEventListener('click',(e)=>{ e.preventDefault(); window.open(gmailLong,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+    document.getElementById('ctaOutlook').addEventListener('click',(e)=>{ e.preventDefault(); window.open(outlookWeb,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+    document.getElementById('ctaMailto').addEventListener('click',(e)=>{ e.preventDefault(); window.location.href=mailto; wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+  })();
+  </script>
+</body>
+</html>
