@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Research — Shon Gur</title>
+  <meta name="description" content="Research write-ups by Shon Gur" />
+  <link rel="preload" as="image" href="assets/security-researcher.png">
+  <style>
+    :root{
+      --text:#eaf2ff; --accent-blue:#64b5f6; --accent-red:#ef5350;
+      --layer-hero:1; --layer-blue:0; --layer-red:0;
+    }
+    .research-page{--layer-hero:0;--layer-blue:1;--layer-red:0;}
+    *{box-sizing:border-box} html,body{height:100%;margin:0}
+    body{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;color:var(--text);min-height:100svh;overflow-x:hidden}
+
+    #bg{position:fixed; inset:0; z-index:0; pointer-events:none}
+    #bg .layer{position:absolute; inset:0; opacity:0; transition:opacity .25s linear}
+    #bg .hero{background:linear-gradient(180deg,#000 0%,#000 100%);opacity:var(--layer-hero)}
+    #bg .blue{background:
+        radial-gradient(900px 600px at 15% -10%, rgba(100,181,246,.03), transparent 40%),
+        linear-gradient(180deg,#031225 0%, #020812 100%);
+      opacity:var(--layer-blue)}
+    #bg .red{background:radial-gradient(900px 600px at 85% 110%, rgba(239,83,80,.12), transparent 40%),linear-gradient(180deg, hsl(330 70% 8%) 0%, hsl(350 70% 3%) 100%);opacity:var(--layer-red)}
+
+    body::after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px),radial-gradient(circle at 20% 10%, rgba(255,255,255,.015) 0 2px, transparent 3px),radial-gradient(circle at 70% 80%, rgba(255,255,255,.012) 0 2px, transparent 3px);mix-blend-mode:overlay}
+
+    main{position:relative;z-index:2;scroll-snap-type:y mandatory}
+    section{min-height:100svh;display:grid;place-items:center;padding:clamp(3rem,6vw,6rem) 1.25rem;scroll-snap-align:start;position:relative}
+
+    .top-nav{position:fixed;top:14px;left:16px;right:16px;z-index:6;display:flex;align-items:center;gap:.65rem;padding:.45rem .55rem;border:1px solid rgba(255,255,255,.14);background:color-mix(in srgb, transparent 78%, rgba(6,10,16,.92));backdrop-filter:blur(10px) saturate(120%);border-radius:14px;box-shadow:0 15px 30px rgba(0,0,0,.35)}
+    .top-nav a,.top-nav button{font-weight:700;text-decoration:none;color:var(--text);background:transparent;border:none;padding:.45rem .7rem;border-radius:10px;display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;transition:background .16s ease, color .16s ease}
+    .top-nav a:hover,.top-nav button:hover,.top-nav a:focus-visible,.top-nav button:focus-visible{background:rgba(255,255,255,.08);outline:none;color:var(--accent-blue)}
+    .nav-dropdown{position:relative}
+    .dropdown-panel{position:absolute;top:calc(100% + 8px);left:0;min-width:220px;max-width:280px;background:color-mix(in srgb, transparent 70%, rgba(6,10,16,.96));border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.55);padding:.65rem;opacity:0;transform:translateY(-6px);pointer-events:none;transition:.16s ease opacity,.16s ease transform}
+    .nav-dropdown:hover .dropdown-panel,.nav-dropdown:focus-within .dropdown-panel{opacity:1;transform:translateY(0);pointer-events:auto}
+    .dropdown-item{display:block;text-decoration:none;color:var(--text);padding:.5rem .55rem;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);transition:background .16s ease,border-color .16s ease}
+    .dropdown-item:hover,.dropdown-item:focus-visible{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);outline:none;color:var(--text)}
+    .dropdown-item h4{margin:.05rem 0 .1rem;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+
+    .contact-wrap{position:relative;margin-left:auto}
+    .contact-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:12px;border:1px solid rgba(255,255,255,.18);color:#06121c;background:var(--accent-blue);font-weight:700;cursor:pointer;backdrop-filter:saturate(120%) blur(4px)}
+    .contact-menu{position:absolute;top:100%;right:0;margin-top:8px;background:rgba(6,10,16,.92);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.45);width:auto;opacity:0;transform:scale(.96);transform-origin:top right;pointer-events:none;transition:.18s opacity ease,.18s transform ease;overflow:hidden;display:flex;gap:8px;padding:10px}
+    .contact-wrap.open .contact-menu{opacity:1;transform:scale(1);pointer-events:auto}
+    .contact-menu a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.04)}
+    .contact-menu a:hover{background:rgba(255,255,255,.10)}
+    .contact-menu .menu-ico, .contact-menu svg{width:26px;height:26px;filter:none !important;mix-blend-mode:normal !important}
+    .contact-menu small{display:none}
+
+    .card{width:min(900px,94vw);background:rgba(6,10,16,.82);border:1px solid rgba(100,181,246,.25);border-radius:20px;padding:clamp(1.4rem,3vw,2.25rem);box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03)}
+    h1{font-size:clamp(2rem,6vw,3.2rem);margin:0 0 .5rem;letter-spacing:.02em;display:flex;align-items:center;gap:.75rem;justify-content:center}
+    .logo{width:56px;height:56px;border-radius:12px;border:1px solid rgba(255,255,255,.2);object-fit:cover}
+    h2{font-size:clamp(1.4rem,4.5vw,2.2rem);margin:0 0 .75rem;text-align:center}
+    p{margin:0 0 1rem;line-height:1.65;opacity:.96}
+
+    .writeup-list{list-style:none;padding:0;margin:1.4rem 0 0;display:grid;gap:.8rem}
+    .writeup-list li{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);border-radius:14px;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+    .writeup-list a{color:var(--text);text-decoration:none;font-weight:700;letter-spacing:.01em;display:inline-flex;align-items:center;gap:.55rem;transition:background .16s ease,border-color .16s ease,color .16s ease}
+    .writeup-list a:hover,.writeup-list a:focus-visible{color:var(--text);outline:none}
+    .writeup-list small{opacity:.8}
+
+    html, body { background:#000; color-scheme: dark; }
+    #bg { background:#000; }
+    #bg .layer { will-change: opacity; backface-visibility: hidden; transform: translateZ(0); }
+    .badge-base__link.LI-simple-link{font-size:0!important;color:transparent!important;line-height:0!important;text-decoration:none!important}
+    .contact-btn .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem;width:22px;height:22px;background:transparent;box-shadow:none;border-radius:6px}
+    .gmail-ico-img{width:18px;height:18px;display:block;filter:none !important;mix-blend-mode:normal !important}
+  </style>
+</head>
+<body class="research-page">
+  <div id="bg" aria-hidden="true">
+    <div class="layer hero"></div>
+    <div class="layer blue"></div>
+    <div class="layer red"></div>
+  </div>
+
+  <nav class="top-nav" aria-label="Primary">
+    <a href="index.html#s1">Home</a>
+    <div class="nav-dropdown">
+      <button type="button" aria-haspopup="true" aria-expanded="false">Research ▾</button>
+      <div class="dropdown-panel" role="menu">
+        <a class="dropdown-item" href="research.html#dominos" role="menuitem">
+          <h4>Domino's one-button order</h4>
+        </a>
+      </div>
+    </div>
+    <div class="contact-wrap">
+      <button class="contact-btn" type="button">
+        <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail icon"></span>
+        <span>Contact</span>
+      </button>
+      <div class="contact-menu" id="contactMenu" role="menu" aria-hidden="true">
+        <a id="ctaGmail" href="#" role="menuitem" aria-label="Compose in Gmail">
+          <img class="menu-ico" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="">
+        </a>
+        <a id="ctaOutlook" href="#" role="menuitem" aria-label="Compose in Outlook">
+          <img class="menu-ico" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/512px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png?20230309112740" alt="Outlook">
+        </a>
+        <a id="ctaMailto" href="mailto:shoncpp@gmail.com?subject=Inquiry" role="menuitem" aria-label="Compose with default mail app">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11zm2.4.3 7.1 5.03a1 1 0 0 0 1 0l7.1-5.03a1 1 0 0 0-.6-1.8h-14a1 1 0 0 0-.6 1.8z"></path></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    (()=>{
+      const dd=document.querySelector('.nav-dropdown');
+      if(!dd) return;
+      const btn=dd.querySelector('button');
+      const panel=dd.querySelector('.dropdown-panel');
+      const set=open=>{
+        if(btn) btn.setAttribute('aria-expanded', open?'true':'false');
+        if(panel) panel.setAttribute('aria-hidden', open?'false':'true');
+      };
+      set(false);
+      dd.addEventListener('mouseenter',()=>set(true));
+      dd.addEventListener('mouseleave',()=>set(false));
+      dd.addEventListener('focusin',()=>set(true));
+      dd.addEventListener('focusout',e=>{ if(!dd.contains(e.relatedTarget)) set(false); });
+    })();
+  </script>
+
+  <main id="app">
+    <section id="dominos">
+      <div class="card">
+        <h1><img class="logo" src="assets/security-researcher.png" alt="logo">Research</h1>
+        <p style="text-align:center">Collected write-ups. Select a name to open the write-up.</p>
+        <ul class="writeup-list">
+          <li>
+            <a href="https://shongur.com/dominos-one-button" target="_blank" rel="noreferrer">Domino's API: one-button ordering</a>
+            <small>API automation workflow</small>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (function(){
+    const wrap=document.querySelector('.contact-wrap'); if(!wrap) return;
+    const btn=wrap.querySelector('.contact-btn');
+    const menu=wrap.querySelector('#contactMenu');
+
+    const to='shoncpp@gmail.com', subject='Inquiry';
+    const gmailLong='https://mail.google.com/mail/u/0/#inbox?compose=GTvVlcSGKZRNjKJDjhKvQTPkzFGkXbvFRglljgwwlnhDwzzlfzZsbzKstbbZzDNppPfPnLZFLFPdL';
+    const gmailWeb=`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}`;
+    const outlookWeb=`https://outlook.live.com/owa/?path=/mail/action/compose&to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+    const mailto=`mailto:${to}?subject=${encodeURIComponent(subject)}`;
+    const gmailApp=`googlegmail:///co?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}`;
+
+    const ua=navigator.userAgent||'';
+    const isAndroid=/Android/i.test(ua);
+    const isIOS=/iPhone|iPad|iPod/i.test(ua);
+    const isMobileUA=/Mobile|Tablet|Android|iP(hone|od|ad)/i.test(ua);
+    const isDesktopOS=/(Macintosh|Mac OS X|Windows NT|X11|Linux x86_64)/.test(ua)&&!isAndroid;
+
+    btn.addEventListener('click',(e)=>{
+      e.preventDefault();
+      if(isDesktopOS && !isMobileUA && !isIOS){
+        wrap.classList.toggle('open');
+        menu.setAttribute('aria-hidden', wrap.classList.contains('open') ? 'false' : 'true');
+      } else {
+        let fellBack=false;
+        setTimeout(()=>{ if(!fellBack){ window.location.href=gmailWeb; setTimeout(()=>{ window.location.href=mailto; },900); fellBack=true; } },700);
+        window.location.href=gmailApp;
+      }
+    });
+
+    document.getElementById('ctaGmail').addEventListener('click',(e)=>{ e.preventDefault(); window.open(gmailLong,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+    document.getElementById('ctaOutlook').addEventListener('click',(e)=>{ e.preventDefault(); window.open(outlookWeb,'_blank','noopener'); wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+    document.getElementById('ctaMailto').addEventListener('click',(e)=>{ e.preventDefault(); window.location.href=mailto; wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); });
+
+    document.addEventListener('click',(ev)=>{ if(!wrap.contains(ev.target)) { wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); } }, {passive:true});
+    document.addEventListener('keydown',(ev)=>{ if(ev.key==='Escape'){ wrap.classList.remove('open'); menu.setAttribute('aria-hidden','true'); }});
+  })();
+  </script>
+</body>
+</html>
