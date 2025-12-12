@@ -10,6 +10,10 @@
     :root{
       --text:#eaf2ff; --accent-blue:#64b5f6; --accent-red:#ef5350;
       --layer-hero:1; --layer-blue:0; --layer-red:0; /* JS animates these */
+      --nav-hover: color-mix(in srgb,
+        rgba(100,181,246, calc(.22 + .6 * var(--layer-blue))) 58%,
+        rgba(239,83,80,  calc(.18 + .6 * var(--layer-red))) 42%
+      );
     }
     *{box-sizing:border-box} html,body{height:100%;margin:0}
     body{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;color:var(--text);min-height:100svh;overflow-x:hidden}
@@ -33,19 +37,26 @@
     main{position:relative;z-index:2;scroll-snap-type:y mandatory}
     section{min-height:100svh;display:grid;place-items:center;padding:clamp(3rem,6vw,6rem) 1.25rem;scroll-snap-align:start;position:relative}
 
-    /* Always-on actions top-right */
-    .site-actions{position:fixed;top:16px;right:16px;z-index:5;display:flex;gap:.5rem}
-    .site-actions a{display:inline-block;padding:.55rem .9rem;border-radius:10px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.18);color:var(--text);background:rgba(5,8,13,.45);backdrop-filter:saturate(120%) blur(4px)}
-    .site-actions a.primary{background:var(--accent-blue);color:#06121c;border-color:rgba(0,0,0,.35)}
-    .contact-wrap{position:relative}
+    /* Always-on top navigation */
+    .top-nav{position:fixed;top:14px;left:16px;right:16px;z-index:6;display:flex;align-items:center;gap:.65rem;padding:.45rem .55rem;border:1px solid rgba(255,255,255,.14);background:color-mix(in srgb, transparent 78%, rgba(6,10,16,.92));backdrop-filter:blur(10px) saturate(120%);border-radius:14px;box-shadow:0 15px 30px rgba(0,0,0,.35)}
+    .top-nav a,.top-nav button{font-weight:700;text-decoration:none;color:var(--text);background:transparent;border:none;padding:.45rem .7rem;border-radius:10px;display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;transition:background .16s ease, color .16s ease, mix-blend-mode .16s ease}
+    .top-nav a:hover,.top-nav button:hover,.top-nav a:focus-visible,.top-nav button:focus-visible{background:rgba(255,255,255,.08);outline:none;color:var(--nav-hover);mix-blend-mode:screen}
+    .nav-dropdown{position:relative}
+    .dropdown-panel{position:absolute;top:100%;left:0;min-width:220px;max-width:280px;background:color-mix(in srgb, transparent 70%, rgba(6,10,16,.96));border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.55);padding:.65rem;opacity:0;transform:translateY(-6px);pointer-events:none;transition:.16s ease opacity,.16s ease transform}
+    .nav-dropdown:hover .dropdown-panel,.nav-dropdown:focus-within .dropdown-panel{opacity:1;transform:translateY(0);pointer-events:auto}
+    .dropdown-item{display:block;text-decoration:none;color:var(--text);padding:.5rem .55rem;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);transition:background .16s ease,border-color .16s ease}
+    .dropdown-item:hover,.dropdown-item:focus-visible{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);outline:none;color:var(--nav-hover);mix-blend-mode:screen}
+    .dropdown-item h4{margin:.05rem 0 .1rem;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+
+    /* Contact dropdown within nav */
+    .contact-wrap{position:relative;margin-left:auto}
     .contact-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem .9rem;border-radius:12px;border:1px solid rgba(255,255,255,.18);color:#06121c;background:var(--accent-blue);font-weight:700;cursor:pointer;backdrop-filter:saturate(120%) blur(4px)}
     .contact-menu{position:absolute;top:100%;right:0;margin-top:8px;background:rgba(6,10,16,.92);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.45);width:auto;opacity:0;transform:scale(.96);transform-origin:top right;pointer-events:none;transition:.18s opacity ease,.18s transform ease;overflow:hidden;display:flex;gap:8px;padding:10px}
     .contact-wrap.open .contact-menu{opacity:1;transform:scale(1);pointer-events:auto}
     .contact-menu a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.04)}
-    .contact-menu a:hover{background:rgba(255,255,255,.10)}
+    .contact-menu a:hover,.contact-menu a:focus-visible{background:rgba(255,255,255,.04);outline:none}
     .contact-menu .menu-ico, .contact-menu svg{width:26px;height:26px;filter:none !important;mix-blend-mode:normal !important}
     .contact-menu small{display:none}
-    .site-actions a.primary{background:var(--accent-blue);color:#06121c;border-color:rgba(0,0,0,.35)}
 
     .card{width:min(1100px,94vw);background:rgba(6,10,16,.82);border:1px solid rgba(100,181,246,.25);border-radius:20px;padding:clamp(1.1rem,2.6vw,2rem);box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.03)}
     .badge{display:inline-block;padding:.25rem .5rem;border:1px dashed rgba(100,181,246,.45);color:var(--accent-blue);border-radius:8px;font-weight:600;letter-spacing:.03em}
@@ -69,6 +80,9 @@
     .repo h4{margin:0 0 .25rem;font-size:1.05rem}
     .repo .meta{font-size:.9rem;opacity:.85;display:flex;gap:.8rem}
 
+    .contact-btn .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem;width:22px;height:22px;background:transparent;box-shadow:none;border-radius:6px}
+    .gmail-ico-img{width:18px;height:18px;display:block;filter:none !important;mix-blend-mode:normal !important}
+
     .nav-dots{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:3}
     .nav-dots button{width:10px;height:10px;border-radius:50%;border:none;opacity:.45;background:var(--accent-blue);cursor:pointer;box-shadow:0 0 8px rgba(100,181,246,.8)}
     .nav-dots button[aria-current="true"]{opacity:1;transform:scale(1.2);background:var(--accent-red);box-shadow:0 0 8px rgba(239,83,80,.8)}
@@ -77,12 +91,8 @@
   html, body { background:#000; color-scheme: dark; }
   #bg { background:#000; }
   #bg .layer { will-change: opacity; backface-visibility: hidden; transform: translateZ(0); }
-  .site-actions .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem}
   /* Hide LinkedIn fallback text link under the badge */
   .badge-base__link.LI-simple-link{font-size:0!important;color:transparent!important;line-height:0!important;text-decoration:none!important}
-  .site-actions .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem}
-  .site-actions .gmail-ico{display:inline-grid;place-items:center;width:22px;height:22px;background:transparent;box-shadow:none;border-radius:6px}
-.gmail-ico-img{width:18px;height:18px;display:block;filter:none !important;mix-blend-mode:normal !important}
   /* Tile clickability */
   .tile{cursor:pointer;border-radius:20px;transition:transform .18s ease, filter .18s ease;will-change:transform,filter}
   .tile:focus{outline:none;box-shadow:none;transform:translateZ(0) scale(1.01);filter:brightness(1.02)}
@@ -99,11 +109,20 @@
     <div class="layer red"></div>
   </div>
 
-  <!-- always-on contact actions -->
-  <div class="site-actions">
+  <!-- persistent navigation -->
+  <nav class="top-nav" aria-label="Primary">
+    <a href="index.html#s1">Home</a>
+    <div class="nav-dropdown">
+      <button type="button" aria-haspopup="true" aria-expanded="false">Research ▾</button>
+      <div class="dropdown-panel" role="menu">
+        <a class="dropdown-item" href="DominosOrder.html" role="menuitem">
+          <h4>Domino's one-button order</h4>
+        </a>
+      </div>
+    </div>
     <div class="contact-wrap">
       <button class="contact-btn" type="button">
-        <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail icon"></span> 
+        <span class="gmail-ico" aria-hidden="true"><img class="gmail-ico-img" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail icon"></span>
         <span>Contact</span>
       </button>
       <div class="contact-menu" id="contactMenu" role="menu" aria-hidden="true">
@@ -111,14 +130,39 @@
           <img class="menu-ico" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="">
         </a>
         <a id="ctaOutlook" href="#" role="menuitem" aria-label="Compose in Outlook">
-          <img class="menu-ico" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg/512px-Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg.png?20230309112740" alt="Outlook">
+          <svg class="menu-ico" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+            <rect x="12" y="10" width="26" height="28" rx="3" fill="#0e5ca8" opacity=".92"/>
+            <path fill="#0b82f0" d="M6 15.5a2.5 2.5 0 0 1 2.5-2.5H30v21H8.5A2.5 2.5 0 0 1 6 31.5z" opacity=".95"/>
+            <path fill="#ffffff" d="M16.9 30.2c-2.95 0-5.3-2.73-5.3-6.2s2.35-6.2 5.3-6.2c3 0 5.3 2.73 5.3 6.2s-2.3 6.2-5.3 6.2zm.03-2.4c1.74 0 3.09-1.7 3.09-3.8s-1.35-3.8-3.09-3.8c-1.7 0-3.1 1.7-3.1 3.8s1.4 3.8 3.1 3.8z"/>
+            <path fill="#7cc3ff" d="m30 15.5 10 6.3v13.2c0 1.05-.85 1.9-1.9 1.9H30z" opacity=".9"/>
+            <path fill="#cbe7ff" d="M31.8 15.2 42 21.9l-8.1 5.1-10-6.3z" opacity=".95"/>
+          </svg>
         </a>
         <a id="ctaMailto" href="mailto:shoncpp@gmail.com?subject=Inquiry" role="menuitem" aria-label="Compose with default mail app">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11zm2.4.3 7.1 5.03a1 1 0 0 0 1 0l7.1-5.03a1 1 0 0 0-.6-1.8h-14a1 1 0 0 0-.6 1.8z"></path></svg>
         </a>
       </div>
     </div>
-  </div>
+  </nav>
+
+  <script>
+    // keep dropdown aria states in sync while using CSS hover/focus reveal
+    (()=>{
+      const dd=document.querySelector('.nav-dropdown');
+      if(!dd) return;
+      const btn=dd.querySelector('button');
+      const panel=dd.querySelector('.dropdown-panel');
+      const set=open=>{
+        if(btn) btn.setAttribute('aria-expanded', open?'true':'false');
+        if(panel) panel.setAttribute('aria-hidden', open?'false':'true');
+      };
+      set(false);
+      dd.addEventListener('mouseenter',()=>set(true));
+      dd.addEventListener('mouseleave',()=>set(false));
+      dd.addEventListener('focusin',()=>set(true));
+      dd.addEventListener('focusout',e=>{ if(!dd.contains(e.relatedTarget)) set(false); });
+    })();
+  </script>
 
   <main id="app">
     <!-- HERO (black bg, icon next to name) -->
