@@ -216,6 +216,43 @@
       </div>
     </section>
 
+    <!-- RESEARCH (blue layer background persists) -->
+    <section id="research">
+      <div class="card">
+        <h2>Research</h2>
+        <article id="research-dominos" class="tile" tabindex="0" style="cursor:default">
+          <h3>Domino's API: one-button ordering</h3>
+          <p>This write-up documents how I automated Domino's ordering so that pressing a single button triggers a full order against their public API: address lookup, menu selection, card payment, and delivery status polling.</p>
+          <div class="row" style="margin-top:.5rem">
+            <div>
+              <h4 style="margin-top:0">Highlights</h4>
+              <ul style="opacity:.9;line-height:1.7;margin:0 0 .5rem 1.1rem">
+                <li>Replays a pre-configured favorite order via a signed API payload.</li>
+                <li>Stores payment token & address in a private profile worker to avoid exposing secrets in the client.</li>
+                <li>Uses a Cloudflare Worker as the button endpoint to sanitize input and forward requests to Domino's.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 style="margin-top:0">Preview</h4>
+              <p style="margin:0 0 .4rem">Pseudocode snippet from the worker that submits the cart:</p>
+              <pre style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:.8rem;border-radius:12px;overflow:auto;max-width:480px"><code>const payload = {
+  storeID,
+  customer: profile.customer,
+  products: profile.favoriteOrder,
+  payments: [profile.cardToken]
+};
+await fetch(dominosApi + '/order/place', {
+  method: 'POST',
+  headers: { Authorization: bearer },
+  body: JSON.stringify(payload)
+});</code></pre>
+              <p style="margin:0">See the full write-up for the auth flow, secrets handling, and UX wiring.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <!-- PERSONAL (red layer target) -->
     <section id="personal">
       <div class="card">
