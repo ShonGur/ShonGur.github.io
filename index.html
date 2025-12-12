@@ -34,15 +34,16 @@
     section{min-height:100svh;display:grid;place-items:center;padding:clamp(3rem,6vw,6rem) 1.25rem;scroll-snap-align:start;position:relative}
 
     /* Always-on top navigation */
-    .top-nav{position:fixed;top:14px;left:16px;right:16px;z-index:6;display:flex;align-items:center;gap:.65rem;padding:.45rem .55rem;border:1px solid rgba(255,255,255,.14);background:color-mix(in srgb, transparent 78%, rgba(6,10,16,.92));backdrop-filter:blur(10px) saturate(120%);border-radius:14px;box-shadow:0 15px 30px rgba(0,0,0,.35)}
+    .top-nav{position:fixed;top:14px;left:16px;right:16px;z-index:6;display:flex;align-items:center;gap:.65rem;padding:.45rem .55rem;border:1px solid rgba(255,255,255,.14);background:rgba(5,8,13,.65);backdrop-filter:blur(4px) saturate(120%);border-radius:14px;box-shadow:0 15px 30px rgba(0,0,0,.35)}
     .top-nav a,.top-nav button{font-weight:700;text-decoration:none;color:var(--text);background:transparent;border:none;padding:.45rem .7rem;border-radius:10px;display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;transition:background .16s ease, color .16s ease}
     .top-nav a:hover,.top-nav button:hover,.top-nav a:focus-visible,.top-nav button:focus-visible{background:rgba(255,255,255,.08);outline:none;color:var(--accent-blue)}
     .nav-dropdown{position:relative}
-    .dropdown-panel{position:absolute;top:calc(100% + 8px);left:0;min-width:220px;max-width:280px;background:color-mix(in srgb, transparent 70%, rgba(6,10,16,.96));border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.55);padding:.65rem;opacity:0;transform:translateY(-6px);pointer-events:none;transition:.16s ease opacity,.16s ease transform}
+    .dropdown-panel{position:absolute;top:calc(100% + 8px);left:0;min-width:260px;max-width:320px;background:rgba(6,10,16,.95);border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.55);padding:.85rem;opacity:0;transform:translateY(-6px);pointer-events:none;transition:.16s ease opacity,.16s ease transform}
     .nav-dropdown:hover .dropdown-panel,.nav-dropdown:focus-within .dropdown-panel{opacity:1;transform:translateY(0);pointer-events:auto}
-    .dropdown-item{display:block;text-decoration:none;color:var(--text);padding:.5rem .55rem;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);transition:background .16s ease,border-color .16s ease}
-    .dropdown-item:hover,.dropdown-item:focus-visible{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);outline:none;color:var(--text)}
-    .dropdown-item h4{margin:.05rem 0 .1rem;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+    .dropdown-item{display:block;text-decoration:none;color:var(--text);padding:.55rem .65rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+    .dropdown-item:hover,.dropdown-item:focus-visible{background:rgba(100,181,246,.12);border-color:rgba(100,181,246,.4);outline:none}
+    .dropdown-item h4{margin:.05rem 0 .25rem;font-size:1rem;display:flex;align-items:center;gap:.4rem}
+    .dropdown-item p{margin:0;font-size:.93rem;line-height:1.5;opacity:.88}
 
     /* Contact dropdown within nav */
     .contact-wrap{position:relative;margin-left:auto}
@@ -106,12 +107,13 @@
 
   <!-- persistent navigation -->
   <nav class="top-nav" aria-label="Primary">
-    <a href="index.html#s1">Home</a>
+    <a href="#s1">Home</a>
     <div class="nav-dropdown">
       <button type="button" aria-haspopup="true" aria-expanded="false">Research ▾</button>
       <div class="dropdown-panel" role="menu">
-        <a class="dropdown-item" href="research.html#dominos" role="menuitem">
+        <a class="dropdown-item" href="#research-dominos" role="menuitem">
           <h4>Domino's one-button order</h4>
+          <p>End-to-end automation of Domino's API with stored profile, address and payment to submit your favorite pizza with a single tap.</p>
         </a>
       </div>
     </div>
@@ -204,6 +206,43 @@
             <div id="pinned" class="grid" aria-live="polite" style="display:none"></div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- RESEARCH (blue layer background persists) -->
+    <section id="research">
+      <div class="card">
+        <h2>Research</h2>
+        <article id="research-dominos" class="tile" tabindex="0" style="cursor:default">
+          <h3>Domino's API: one-button ordering</h3>
+          <p>This write-up documents how I automated Domino's ordering so that pressing a single button triggers a full order against their public API: address lookup, menu selection, card payment, and delivery status polling.</p>
+          <div class="row" style="margin-top:.5rem">
+            <div>
+              <h4 style="margin-top:0">Highlights</h4>
+              <ul style="opacity:.9;line-height:1.7;margin:0 0 .5rem 1.1rem">
+                <li>Replays a pre-configured favorite order via a signed API payload.</li>
+                <li>Stores payment token & address in a private profile worker to avoid exposing secrets in the client.</li>
+                <li>Uses a Cloudflare Worker as the button endpoint to sanitize input and forward requests to Domino's.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 style="margin-top:0">Preview</h4>
+              <p style="margin:0 0 .4rem">Pseudocode snippet from the worker that submits the cart:</p>
+              <pre style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:.8rem;border-radius:12px;overflow:auto;max-width:480px"><code>const payload = {
+  storeID,
+  customer: profile.customer,
+  products: profile.favoriteOrder,
+  payments: [profile.cardToken]
+};
+await fetch(dominosApi + '/order/place', {
+  method: 'POST',
+  headers: { Authorization: bearer },
+  body: JSON.stringify(payload)
+});</code></pre>
+              <p style="margin:0">See the full write-up for the auth flow, secrets handling, and UX wiring.</p>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
