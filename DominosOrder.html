@@ -46,7 +46,7 @@
     .contact-menu{position:absolute;top:100%;right:0;margin-top:8px;background:rgba(6,10,16,.92);border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.45);width:auto;opacity:0;transform:scale(.96);transform-origin:top right;pointer-events:none;transition:.18s opacity ease,.18s transform ease;overflow:hidden;display:flex;gap:8px;padding:10px}
     .contact-wrap.open .contact-menu{opacity:1;transform:scale(1);pointer-events:auto}
     .contact-menu a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.04)}
-    .contact-menu a:hover{background:rgba(255,255,255,.10)}
+    .contact-menu a:hover,.contact-menu a:focus-visible{background:rgba(255,255,255,.04);outline:none}
     .contact-menu .menu-ico, .contact-menu svg{width:26px;height:26px;filter:none!important;mix-blend-mode:normal!important}
     .contact-menu small{display:none}
     .contact-btn .gmail-ico{display:inline-grid;place-items:center;margin-right:.45rem;width:22px;height:22px;background:transparent;box-shadow:none;border-radius:6px}
@@ -80,10 +80,12 @@
           <img class="menu-ico" src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="">
         </a>
         <a id="ctaOutlook" href="#" role="menuitem" aria-label="Compose in Outlook">
-          <svg class="menu-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path fill="#0a63d8" d="M3 6.75A2.75 2.75 0 0 1 5.75 4h10.5A2.75 2.75 0 0 1 19 6.75v10.5A2.75 2.75 0 0 1 16.25 20H5.75A2.75 2.75 0 0 1 3 17.25z" opacity=".75"></path>
-            <path fill="#0a63d8" d="M20 7.5v8.85c0 .41-.45.66-.8.42l-4.7-3.28-2.7 2.08a1 1 0 0 1-1.2 0L8.9 12.6 6 14.75V7.5c0-.83.67-1.5 1.5-1.5h11c.83 0 1.5.67 1.5 1.5z" opacity=".95"></path>
-            <path fill="#f7fbff" d="M10.35 10.26c-.37-.41-.87-.66-1.43-.66-1.19 0-2.1 1-2.1 2.4s.91 2.42 2.1 2.42c.56 0 1.06-.22 1.43-.64V15h.95v-4.8h-.95zm-.02 2.74c-.25.39-.59.6-.97.6-.69 0-1.2-.57-1.2-1.58 0-.99.51-1.56 1.2-1.56.38 0 .72.2.97.59z"></path>
+          <svg class="menu-ico" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+            <rect x="12" y="10" width="26" height="28" rx="3" fill="#0e5ca8" opacity=".92"/>
+            <path fill="#0b82f0" d="M6 15.5a2.5 2.5 0 0 1 2.5-2.5H30v21H8.5A2.5 2.5 0 0 1 6 31.5z" opacity=".95"/>
+            <path fill="#ffffff" d="M16.9 30.2c-2.95 0-5.3-2.73-5.3-6.2s2.35-6.2 5.3-6.2c3 0 5.3 2.73 5.3 6.2s-2.3 6.2-5.3 6.2zm.03-2.4c1.74 0 3.09-1.7 3.09-3.8s-1.35-3.8-3.09-3.8c-1.7 0-3.1 1.7-3.1 3.8s1.4 3.8 3.1 3.8z"/>
+            <path fill="#7cc3ff" d="m30 15.5 10 6.3v13.2c0 1.05-.85 1.9-1.9 1.9H30z" opacity=".9"/>
+            <path fill="#cbe7ff" d="M31.8 15.2 42 21.9l-8.1 5.1-10-6.3z" opacity=".95"/>
           </svg>
         </a>
         <a id="ctaMailto" href="mailto:shoncpp@gmail.com?subject=Inquiry" role="menuitem" aria-label="Compose with default mail app">
@@ -94,44 +96,10 @@
   </nav>
 
   <main>
-    <div class="card">
+    <div class="card" style="text-align:center; color:rgba(234,242,255,.55)">
       <span class="badge">Automation write-up</span>
       <h1><img class="logo" src="assets/security-researcher.png" alt="logo">Domino's one-button order</h1>
-      <p>This note captures the flow I used to trigger a full Domino's Pizza order with a single action using their exposed API endpoints. It keeps the UI minimal while automating cart creation, store selection, and payment authorization.</p>
-
-      <h2>Key flow</h2>
-      <ul>
-        <li>Authenticate once with the Domino's customer API and store the returned <code>customerId</code>, store <code>addressId</code>, and payment token (wallet / card nonce).</li>
-        <li>Build a reusable order payload with preferred items and quantities. Reuse Domino's menu IDs so items stay stable even if names change.</li>
-        <li>On button press, call <code>/power/store-locator</code> to confirm the nearest store that can fulfill the order and obtain its <code>StoreID</code>.</li>
-        <li>Create the order via <code>/power/place-order</code> using the stored profile, address, and payment token. Set <code>ServiceMethod</code> to <code>Delivery</code> or <code>Carryout</code> as desired.</li>
-        <li>Poll <code>/order/{OrderID}/status</code> to surface baking/quality check/ready statuses for optional notifications.</li>
-      </ul>
-
-      <h2>Example request shape</h2>
-      <pre><code>{
-  "StoreID": "1234",
-  "ServiceMethod": "Delivery",
-  "CustomerID": "&lt;customerId&gt;",
-  "Address": { "Street": "...", "City": "...", "Region": "...", "PostalCode": "..." },
-  "OrderPayment": {
-    "Type": "Wallet",
-    "PaymentToken": "&lt;token&gt;",
-    "Amount": 23.45
-  },
-  "Products": [
-    { "Code": "14SCREEN", "Qty": 1, "Options": { "X": { "1/1": "1" }, "P": { "1/1": "1" } } },
-    { "Code": "2LDCOKE", "Qty": 1 }
-  ]
-}</code></pre>
-
-      <h2>Hardening notes</h2>
-      <ul>
-        <li>Throttle to one active order at a time per account to avoid duplicate charges.</li>
-        <li>Expire cached store lookups after 30 minutes so a closed store is not reused.</li>
-        <li>Surface failures with the API error code and message; Domino's returns structured details that help distinguish validation vs. payment issues.</li>
-        <li>Keep the button UX simple—trigger the API call, then show a status chip fed by the polling loop.</li>
-      </ul>
+      <p style="font-size:1.05rem; margin-top:1rem; margin-bottom:0; color:rgba(234,242,255,.55)">Coming soon…</p>
     </div>
   </main>
 
